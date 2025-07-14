@@ -1,0 +1,11 @@
+account_file: "account.json" # file chứa thông tin login
+
+login_qrcode: true # tự động chuyển sang qrcode login khi cookie không thể login
+qrcode_path: "qr.png" # ảnh qrcode
+save_cookie: true # tư động lưu lại cookie sau khi đăng nhập bắng qrcode xong
+
+# cấu hình của zca-js
+zca_js_config:
+  selfListen: false
+  checkUpdate: true
+  logging: true
