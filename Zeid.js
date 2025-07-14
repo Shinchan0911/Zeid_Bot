@@ -41,6 +41,8 @@ const api = await login();
 
 global.client.api = api;
 
+logger.log("Đã đăng nhập thành công", "info")
+
 await loaderCommand();
 
 listener(api);
