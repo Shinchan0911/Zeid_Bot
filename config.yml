@@ -1,8 +1,19 @@
 account_file: "account.json" # file chứa thông tin login
 
+# cấu hình login bằng qrcode
 login_qrcode: true # tự động chuyển sang qrcode login khi cookie không thể login
 qrcode_path: "qr.png" # ảnh qrcode
 save_cookie: true # tư động lưu lại cookie sau khi đăng nhập bắng qrcode xong
+
+# cấu hình bot
+prefix: "/"
+admin_bot:
+  - "5741276862607037132"
+  - "2"
+support_bot:
+  - "1"
+  - "2"
+allow_private_command: true # có cho bot nhận lệnh từ tin nhắn riêng hay không
 
 # cấu hình của zca-js
 zca_js_config:

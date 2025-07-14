@@ -6,12 +6,12 @@
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "ShinTHL09",
+  "author": "ShinTHL09, NLam182",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "chalk": "^4.1.2",
-    "figlet": "^1.8.2",
+    "luxon": "^3.7.1",
     "semver": "^7.7.2",
     "yaml": "^2.8.0",
     "zca-js": "^2.0.0-beta.24"

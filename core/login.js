@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { Zalo } = require("zca-js");
 const logger = require("../utils/logger");
-const { saveBase64Image, getJsonData } = require("./index");
+const { saveBase64Image, getJsonData } = require("../utils/index");
 
 async function loginWithQR() {
     try {

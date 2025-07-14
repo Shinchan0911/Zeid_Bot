@@ -1,10 +1,21 @@
 const fs = require("fs");
 const path = require("path");
 const YAML = require("yaml");
-const login = require("./utils/login");
+const login = require("./core/login");
 const logger = require("./utils/logger");
+const listener = require("./core/listen");
+const loaderCommand = require("./core/loader/loaderCommand");
 
-global.client = new Object();
+global.client = new Object({
+    commands: new Map(),
+    events: new Map(),
+    cooldowns: new Map()
+});
+
+global.users = {
+  admin: [],
+  support: []
+};
 
 global.config = new Object();
 
@@ -16,6 +27,10 @@ try {
     const config = YAML.parse(fileContent);
 
     global.config = config;
+    global.users = {
+      admin: Array.isArray(config.admin_bot) ? config.admin_bot.map(String) : [],
+      support: Array.isArray(config.support_bot) ? config.support_bot.map(String) : []
+    };
     logger.log("Đã tải cấu hình từ config.yml thành công", "info");
 } catch (error) {
     logger.log(`Lỗi khi đọc config.yml: ${error.message || error}`, "error");
@@ -26,8 +41,8 @@ const api = await login();
 
 global.client.api = api;
 
-logger.log(`Đã đăng nhập thành công`, "info");
+await loaderCommand();
 
-api.listener.start();
+listener(api);
 
 })();
