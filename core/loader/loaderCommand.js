@@ -36,9 +36,9 @@ function loadCommands(dir = path.join(__dirname, "../..", "modules", "commands")
 
     if (typeof command.onLoad === "function") {
       try {
-        command.onLoad({ logger });
+        command.onLoad({ api });
       } catch (e) {
-        logger.log(`Lỗi trong onLoad của ${name}: ${e.message}`, "error");
+        logger.log(`Lỗi trong onLoad của command ${name}: ${e.message}`, "error");
       }
     }
   }

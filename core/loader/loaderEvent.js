@@ -41,7 +41,7 @@ function loadEvents(dir = path.join(__dirname, "../..", "modules", "events")) {
         try {
             event.onLoad({ logger });
         } catch (e) {
-            logger.log(`Lỗi trong onLoad của ${eventName}: ${e.message}`, "error");
+            logger.log(`Lỗi trong onLoad của event ${eventName}: ${e.message}`, "error");
         }
     }
   }
