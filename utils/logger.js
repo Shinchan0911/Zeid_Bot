@@ -39,6 +39,8 @@ function log(data, option) {
         case "info":
             console.log(chalk.bold.hex("#00BFFF")(time +' » ') + data);
             break;
+        default:
+          console.log(chalk.bold.hex("#00BFFF")(data));
     }
 }
 

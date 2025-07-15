@@ -38,27 +38,26 @@ try {
     process.exit(1);
 }
 
+logger.log("\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓");
+for (let i = 0; i <= global.users.admin.length - 1; i++) {
+    dem = i + 1;
+    logger.log(` ID ADMIN ${dem}: ${!global.users.admin[i] ? "Trống" : global.users.admin[i]}`);
+}
+for (let i = 0; i <= global.users.support.length - 1; i++) {
+    dem = i + 1;
+    logger.log(` ID SUPPORT ${dem}: ${!global.users.support[i] ? "Trống" : global.users.support[i]}`);
+}
+logger.log(` NAME BOT: ${global.config.name_bot}`);
+logger.log(` PREFIX: ${global.config.prefix}`)
+logger.log("┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛\n");
+
 const api = await login();
 
-global.client.api = api;
-
-logger.log("Đã đăng nhập thành công", "info")
+logger.log("Đã đăng nhập thành công", "info");
 
 await loaderCommand();
-// Xử lý tải events
 await loaderEvent();
-logger.log("Đang thực thi các module onLoad...", "info");
-    const modulesToLoad = [...global.client.commands.values(), ...global.client.events.values()];
-    for (const module of modulesToLoad) {
-        if (module.onLoad) {
-            try {
-                await module.onLoad({ api: global.client.api });
-            } catch (error) {
-                logger.log(`Lỗi khi thực thi onLoad của module ${module.config.name}: ${error.message}`, "error");
-            }
-        }
-    }
-///////////////////
+
 listener(api);
 
 })();

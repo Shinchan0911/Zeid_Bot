@@ -1,25 +1,19 @@
-const { ThreadType, GroupEventType } = require("zca-js");
-const axios = require("axios");
-const moment = require("moment-timezone");
-const fs = require("fs").promises;
-const path = require("path");
-
 module.exports.config = {
+    event_type: "group_event",
     name: "joinNoti",
     version: "1.0.0",
     author: "NLam182",
-    description: "Chào mừng thành viên mới vào nhóm.",
-    dependencies: {
-        "axios": "",
-        "moment-timezone": ""
-    }
+    description: "Chào mừng thành viên mới vào nhóm."
 };
 
-module.exports.onLoad = async function({ api }) {
+module.exports.run = async function({ api, event }) {
+    const { ThreadType, GroupEventType } = require("zca-js");
+    const axios = require("axios");
+    const fs = require("fs").promises;
+    const path = require("path");
     const tempPath = path.join(__dirname, 'temp');
     try { await fs.mkdir(tempPath, { recursive: true }); } catch (e) { console.error("Không thể tạo thư mục temp:", e); }
 
-    api.listener.on("group_event", async (event) => {
         if (event.type !== GroupEventType.JOIN) return;
 
         const { threadId, data } = event;
@@ -105,5 +99,4 @@ module.exports.onLoad = async function({ api }) {
                 try { await fs.unlink(filePath); } catch (_) {}
             }
         }
-    });
 };

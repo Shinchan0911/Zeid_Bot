@@ -7,6 +7,7 @@ save_cookie: true # tư động lưu lại cookie sau khi đăng nhập bắng q
 
 # cấu hình bot
 prefix: "/"
+name_bot: "Zeid Bot"
 admin_bot:
   - "5741276862607037132"
   - "2"
