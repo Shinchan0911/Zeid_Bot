@@ -8,7 +8,7 @@ module.exports.config = {
     version: "1.0.0",
     role: 0,
     author: "NLam182",
-    description: "Hiển thị thông tin chi tiết của nhóm chat với vai trò Quản trị viên.",
+    description: "Hiển thị thông tin chi tiết của nhóm chat",
     category: "Tiện ích",
     usage: "<prefix>info",
     cooldowns: 5
