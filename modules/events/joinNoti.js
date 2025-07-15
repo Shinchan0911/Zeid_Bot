@@ -16,7 +16,7 @@ module.exports.config = {
 };
 
 module.exports.onLoad = async function({ api }) {
-    const tempPath = path.join(process.cwd(), 'temp');
+    const tempPath = path.join(__dirname, 'temp');
     try { await fs.mkdir(tempPath, { recursive: true }); } catch (e) { console.error("Không thể tạo thư mục temp:", e); }
 
     api.listener.on("group_event", async (event) => {
