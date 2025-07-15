@@ -30,7 +30,7 @@ function loadCommands(dir = path.join(__dirname, "../..", "modules", "commands")
           logger.log(`Lỗi khi cài ${pkgName}: ${err.message}`, "error");
         }
       }
-    }
+    } 
 
     global.client.commands.set(name, command);
 

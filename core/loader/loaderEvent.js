@@ -39,7 +39,7 @@ function loadEvents(dir = path.join(__dirname, "../..", "modules", "events")) {
 
     if (typeof event.onLoad === "function") {
         try {
-            event.onLoad({ logger });
+            event.onLoad({ api });
         } catch (e) {
             logger.log(`Lỗi trong onLoad của event ${eventName}: ${e.message}`, "error");
         }
