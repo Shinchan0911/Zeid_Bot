@@ -3,7 +3,7 @@ const path = require("path");
 const { execSync } = require("child_process");
 const logger = require("../../utils/logger");
 
-function loadCommands(dir = path.join(__dirname, "../..", "module", "commands")) {
+function loadCommands(dir = path.join(__dirname, "../..", "modules", "commands")) {
   const files = fs.readdirSync(dir).filter(file => file.endsWith(".js"));
 
   for (const file of files) {
