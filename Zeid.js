@@ -5,6 +5,7 @@ const login = require("./core/login");
 const logger = require("./utils/logger");
 const listener = require("./core/listen");
 const loaderCommand = require("./core/loader/loaderCommand");
+const loaderEvent = require("./core/loader/loaderEvent");
 
 global.client = new Object({
     commands: new Map(),
@@ -44,7 +45,20 @@ global.client.api = api;
 logger.log("Đã đăng nhập thành công", "info")
 
 await loaderCommand();
-
+// Xử lý tải events
+await loaderEvent();
+logger.log("Đang thực thi các module onLoad...", "info");
+    const modulesToLoad = [...global.client.commands.values(), ...global.client.events.values()];
+    for (const module of modulesToLoad) {
+        if (module.onLoad) {
+            try {
+                await module.onLoad({ api: global.client.api });
+            } catch (error) {
+                logger.log(`Lỗi khi thực thi onLoad của module ${module.config.name}: ${error.message}`, "error");
+            }
+        }
+    }
+///////////////////
 listener(api);
 
 })();
