@@ -1,5 +1,5 @@
 module.exports.config = {
-    event_type: "message",
+    event_type: ["message"],
     name: "log",
     version: "1.0.0",
     author: "ShinTHL09",
