@@ -1,11 +1,11 @@
 module.exports.config = {
     name: "id",
-    version: "1.2.0",
+    version: "1.3.0",
     role: 0,
     author: "NLam182",
-    description: "Lấy userId của người dùng, hoặc ID của nhóm chat.",
+    description: "Lấy userId, globalId của người dùng, hoặc ID nhóm.",
     category: "Tiện ích",
-    usage: "id | id [số điện thoại] | id box | id @user (có thể tag nhiều)",
+    usage: "id | id [số điện thoại] | id box | id @user (nhiều tag)",
     cooldowns: 5,
     dependencies: {}
 };
@@ -33,28 +33,36 @@ module.exports.run = async ({ args, event, api }) => {
 
     const mentions = data.mentions;
     if (mentions && mentions.length > 0) {
-        const nameList = await Promise.all(mentions.map(async m => {
+        const list = await Promise.all(mentions.map(async m => {
             const uid = m.uid;
             try {
                 const info = await api.getUserInfo(uid);
-                const name = info?.changed_profiles?.[uid]?.displayName || "Không rõ tên";
-                return `👤 ${name} - ${uid}`;
+                const profile = info?.changed_profiles?.[uid];
+                const name = profile?.displayName || "Không rõ tên";
+                const globalId = profile?.globalId || "Không có";
+                return `👤 ${name} - ${uid}\n🌐 GlobalID: ${globalId}`;
             } catch {
-                return `👤 (Không lấy được tên) - ${uid}`;
+                return `👤 (Không thể lấy tên) - ${uid}`;
             }
         }));
-        return api.sendMessage(`📌 Danh sách ID người được tag:\n${nameList.join("\n")}`, threadId, type);
+        return api.sendMessage(`📌 Thông tin người được tag:\n\n${list.join("\n\n")}`, threadId, type);
     }
 
     if (args.length === 0) {
         try {
             const senderId = data.uidFrom;
             const info = await api.getUserInfo(senderId);
-            const name = info?.changed_profiles?.[senderId]?.displayName || "Không rõ tên";
-            return api.sendMessage(`🙋 Tên của bạn: ${name}\n🆔 ID: ${senderId}`, threadId, type);
+            const profile = info?.changed_profiles?.[senderId];
+
+            if (!profile) throw new Error("Không tìm thấy hồ sơ người dùng");
+
+            const name = profile.displayName || "Không rõ tên";
+            const globalId = profile.globalId || "Không có";
+
+            return api.sendMessage(`🙋‍♂️ Tên bạn: ${name}\n🆔 UID: ${senderId}\n🌐 GlobalID: ${globalId}`, threadId, type);
         } catch (error) {
-            console.error("Lỗi khi lấy ID người gửi:", error);
-            return api.sendMessage("❌ Đã xảy ra lỗi khi lấy ID của bạn.", threadId, type);
+            console.error("Lỗi khi lấy thông tin bản thân:", error);
+            return api.sendMessage("❌ Không thể lấy thông tin của bạn.", threadId, type);
         }
     }
 
@@ -62,17 +70,23 @@ module.exports.run = async ({ args, event, api }) => {
     try {
         const userInfo = await api.findUser(phoneNumber);
         if (userInfo?.uid) {
-            const targetId = userInfo.uid;
-            await api.sendMessage(`📞 Tìm thấy người dùng với SĐT ${phoneNumber}!\n🆔 ID: ${targetId}`, threadId, type);
-            await api.sendCard({
-                userId: targetId,
+            const uid = userInfo.uid;
+            const info = await api.getUserInfo(uid);
+            const profile = info?.changed_profiles?.[uid];
+
+            const name = profile?.displayName || "Không rõ tên";
+            const globalId = profile?.globalId || "Không có";
+
+            await api.sendMessage(`📞 Tìm thấy người dùng:\n👤 ${name} - ${uid}\n🌐 GlobalID: ${globalId}`, threadId, type);
+            return await api.sendCard({
+                userId: uid,
                 phoneNumber
             }, threadId, type);
         } else {
-            await api.sendMessage(`❌ Không tìm thấy người dùng với số điện thoại "${phoneNumber}".`, threadId, type);
+            return api.sendMessage(`❌ Không tìm thấy người dùng với SĐT "${phoneNumber}".`, threadId, type);
         }
     } catch (err) {
-        console.error(`Lỗi khi tìm SĐT ${phoneNumber}:`, err);
-        return api.sendMessage("❌ Có lỗi xảy ra khi tìm kiếm số điện thoại.", threadId, type);
+        console.error(`Lỗi khi tìm theo số điện thoại ${phoneNumber}:`, err);
+        return api.sendMessage("❌ Có lỗi khi tìm kiếm số điện thoại.", threadId, type);
     }
 };
