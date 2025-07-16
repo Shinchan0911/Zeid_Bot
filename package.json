@@ -15,6 +15,7 @@
     "luxon": "^3.7.1",
     "moment-timezone": "^0.6.0",
     "semver": "^7.7.2",
+    "string-similarity": "^4.0.4",
     "yaml": "^2.8.0",
     "zca-js": "^2.0.0-beta.24"
   }
