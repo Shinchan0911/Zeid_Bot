@@ -45,7 +45,7 @@ function startListening(api) {
   });
 
   api.listener.start();
-  logger.log("✅ Đã bắt đầu lắng nghe sự kiện", "info");
+  logger.log("Đã bắt đầu lắng nghe sự kiện", "info");
 }
 
 module.exports = startListening;
