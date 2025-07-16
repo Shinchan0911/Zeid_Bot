@@ -10,7 +10,7 @@ function loadCommands(dir = path.join(__dirname, "../..", "modules", "commands")
     const filePath = path.join(dir, file);
     const command = require(filePath);
 
-    if (!command.config || !command.config.name || typeof command.run !== "function") {
+    if (!command.config || !command.config.name || !command.config.cooldowns || typeof command.run !== "function") {
       logger.log(`Command ${file} không hợp lệ`, "warn");
       continue;
     }
