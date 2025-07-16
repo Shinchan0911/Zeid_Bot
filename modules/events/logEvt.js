@@ -10,7 +10,7 @@ module.exports.run = async function({ api, event, eventType }) {
     try {
         const eventDataString = JSON.stringify(event, null, 2);
         console.log(`\n--- [ BẮT ĐẦU  ] ---`);
-        console.log(`🔔 Loại event: ${eventType.toUpperCase()}`); // In hoa tên sự kiện
+        console.log(`🔔 Loại event: ${eventType.toUpperCase()}`);
         console.log(`📝 Dữ liệu chi tiết:`);
         console.log(eventDataString);
         
