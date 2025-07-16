@@ -1,11 +1,11 @@
 module.exports.config = {
     name: "id",
-    version: "1.1.0",
+    version: "1.2.0",
     role: 0,
     author: "NLam182",
     description: "Lấy userId của người dùng, hoặc ID của nhóm chat.",
     category: "Tiện ích",
-    usage: "id | id [số điện thoại] | id box | id @user",
+    usage: "id | id [số điện thoại] | id box | id @user (có thể tag nhiều)",
     cooldowns: 5,
     dependencies: {}
 };
@@ -17,7 +17,15 @@ module.exports.run = async ({ args, event, api }) => {
 
     if (args[0]?.toLowerCase() === "box") {
         if (type === ThreadType.Group) {
-            return api.sendMessage(`🧩 ID của nhóm này là: ${threadId}`, threadId, type);
+            try {
+                const groupInfo = await api.getGroupInfo(threadId);
+                const details = groupInfo.gridInfoMap?.[threadId];
+                const groupName = details?.name || "Không rõ tên nhóm";
+                return api.sendMessage(`🧩 Tên nhóm: ${groupName}\n🆔 ID nhóm: ${threadId}`, threadId, type);
+            } catch (err) {
+                console.error("Lỗi khi lấy thông tin nhóm:", err);
+                return api.sendMessage("❌ Không thể lấy thông tin nhóm hiện tại.", threadId, type);
+            }
         } else {
             return api.sendMessage("❌ Lệnh này chỉ sử dụng trong nhóm.", threadId, type);
         }
@@ -55,7 +63,7 @@ module.exports.run = async ({ args, event, api }) => {
         const userInfo = await api.findUser(phoneNumber);
         if (userInfo?.uid) {
             const targetId = userInfo.uid;
-            await api.sendMessage(`📞 Tìm thấy người dùng với SĐT ${phoneNumber}!\nID: ${targetId}`, threadId, type);
+            await api.sendMessage(`📞 Tìm thấy người dùng với SĐT ${phoneNumber}!\n🆔 ID: ${targetId}`, threadId, type);
             await api.sendCard({
                 userId: targetId,
                 phoneNumber
