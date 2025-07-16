@@ -6,8 +6,6 @@ const logger = require("../../utils/logger");
 function loadEvents(dir = path.join(__dirname, "../..", "modules", "events")) {
   const files = fs.readdirSync(dir).filter(file => file.endsWith(".js"));
 
-  global.client.events = new Map();
-
   for (const file of files) {
     const filePath = path.join(dir, file);
     const event = require(filePath);
@@ -17,7 +15,7 @@ function loadEvents(dir = path.join(__dirname, "../..", "modules", "events")) {
       !Array.isArray(event.config.event_type) ||
       typeof event.run !== "function"
     ) {
-      logger.log(`⚠️ Event ${file} không hợp lệ`, "warn");
+      logger.log(`Event ${file} không hợp lệ`, "warn");
       continue;
     }
 
@@ -28,12 +26,12 @@ function loadEvents(dir = path.join(__dirname, "../..", "modules", "events")) {
       try {
         require.resolve(pkgName);
       } catch {
-        logger.log(`📦 Cài đặt package: ${pkgName}@${version || "latest"}`, "info");
+        logger.log(`Cài đặt package: ${pkgName}@${version || "latest"}`, "info");
         try {
           execSync(`npm install ${pkgName}@${version || "latest"}`, { stdio: "inherit" });
-          logger.log(`✅ Đã cài xong ${pkgName}`, "info");
+          logger.log(`Đã cài xong ${pkgName}`, "info");
         } catch (err) {
-          logger.log(`❌ Lỗi khi cài ${pkgName}: ${err.message}`, "error");
+          logger.log(`Lỗi khi cài ${pkgName}: ${err.message}`, "error");
         }
       }
     }
@@ -44,12 +42,12 @@ function loadEvents(dir = path.join(__dirname, "../..", "modules", "events")) {
       try {
         event.onLoad({ api: global.api });
       } catch (e) {
-        logger.log(`⚠️ Lỗi trong onLoad của event ${eventName}: ${e.message}`, "error");
+        logger.log(`Lỗi trong onLoad của event ${eventName}: ${e.message}`, "error");
       }
     }
   }
 
-  logger.log(`✅ Đã tải ${global.client.events.size} event module`, "info");
+  logger.log(`Đã tải ${global.client.events.size} event module`, "info");
 }
 
 module.exports = loadEvents;
