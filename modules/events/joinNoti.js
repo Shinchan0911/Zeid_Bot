@@ -1,5 +1,5 @@
 module.exports.config = {
-    event_type: "group_event",
+    event_type: ["group_event"],
     name: "joinNoti",
     version: "1.0.0",
     author: "NLam182",
