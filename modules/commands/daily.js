@@ -7,7 +7,7 @@ module.exports.config = {
   category: 'Kiếm tiền',
   usage: 'daily',
   cooldowns: 5,
-  rewardAmount: 1000, // số tiền thưởng mỗi ngày
+  rewardAmount: 10000, // số tiền thưởng mỗi ngày
   cooldownTime: 12 * 60 * 60 * 1000 // thời gian chờ: 12 giờ
 };
 
@@ -39,7 +39,7 @@ module.exports.run = async ({ event, api, Users }) => {
   console.log(userData);
 
   return api.sendMessage(
-    `🎉 Bạn vừa nhận được ${rewardAmount.toLocaleString()} VNĐ! Quay lại sau 12 giờ để nhận tiếp nhé.`,
+    `🎉 Bạn vừa nhận được ${rewardAmount.toLocaleString('vi-VN')}₫! Quay lại sau 12 giờ để nhận tiếp nhé.`,
     threadId, type
   );
 };
