@@ -15,6 +15,7 @@ support_bot:
   - "1"
   - "2"
 allow_private_command: true # có cho bot nhận lệnh từ tin nhắn riêng hay không
+default_money: 0 # tiền mặc định của user khi khởi tạo database
 
 # cấu hình của zca-js
 zca_js_config:

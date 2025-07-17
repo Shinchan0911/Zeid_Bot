@@ -14,7 +14,7 @@ module.exports.config = {
 };
 
 module.exports.run = async function({ api, event }) {
-    const { threadId, data } = event;
+    const { threadId, data, type } = event;
     const time = moment.tz("Asia/Ho_Chi_Minh").format("D/MM/YYYY HH:mm:ss");
 
     const senderName = data.dName || "Không rõ";
@@ -30,7 +30,7 @@ module.exports.run = async function({ api, event }) {
 
     let message;
 
-    if (threadId === data.uidFrom) {
+    if (type == 0) {
         message = chalk.yellow(`
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓
  Tin nhắn riêng từ: ${senderName}

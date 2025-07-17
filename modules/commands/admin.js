@@ -4,14 +4,14 @@ module.exports.config = {
   name: 'admin',
   version: '1.1.0',
   role: 2,
-  author: 'shinthl09',
+  author: 'ShinTHL09',
   description: 'Quản lý admin và support của bot bằng ID hoặc tag.',
   category: 'Hệ thống',
   usage: 'admin <add|rm|sp|rmsp|list> [@tag/ID] (có thể tag nhiều người, nhập nhiều uid cách nhau dấu cách hoặc ,)',
   cooldowns: 2
 };
 
-module.exports.run = async ({ args, event, api }) => {
+module.exports.run = async ({ args, event, api, Threads }) => {
   const action = args[0]?.toLowerCase();
   const { threadId, type, data } = event;
 
@@ -101,6 +101,31 @@ module.exports.run = async ({ args, event, api }) => {
 
       return api.sendMessage(msg, threadId, type);
     }
+  case "adminonly":
+  case "supportonly":
+  case "boxonly": {
+    const keyMap = {
+      adminonly: "admin_only",
+      supportonly: "support_only",
+      boxonly: "box_only"
+    };
+
+    const key = keyMap[action.toLowerCase()];
+
+    const threadData = await Threads.getData(threadId);
+    const currentValue = threadData.data[key] || false;
+
+    const newValue = !currentValue;
+    threadData.data[key] = newValue;
+    Threads.setData(threadId, threadData.data);
+
+    return api.sendMessage(
+      `✅ Đã ${newValue ? "bật" : "tắt"} chế độ ${key.replace("_", " ")}.`,
+      threadId,
+      type
+    );
+  }
+
 
     default:
       return api.sendMessage(
@@ -109,7 +134,10 @@ module.exports.run = async ({ args, event, api }) => {
         "admin rm [@tag/ID...] - Gỡ admin\n" +
         "admin sp [@tag/ID...] - Thêm support\n" +
         "admin rmsp [@tag/ID...] - Gỡ support\n" +
-        "admin list - Xem danh sách",
+        "admin list - Xem danh sách\n\n" +
+        "admin adminonly - Bật tắt chế độ chỉ admin được dùng bot\n" +
+        "admin supportonly - Bật tắt chế độ chỉ support được dùng bot\n" +
+        "admin boxonly - Bật tắt chế độ chỉ cho phép trong nhóm",
         threadId, type
       );
   }

@@ -38,6 +38,7 @@ try {
     process.exit(1);
 }
 
+
 logger.log("\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓");
 for (let i = 0; i <= global.users.admin.length - 1; i++) {
     dem = i + 1;

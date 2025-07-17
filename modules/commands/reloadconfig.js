@@ -2,7 +2,7 @@ module.exports.config = {
   name: 'reloadconfig',
   version: '1.0.0',
   role: 2,
-  author: 'shinthl09',
+  author: 'ShinTHL09',
   description: 'Tải lại config',
   category: 'Hệ thống',
   usage: 'reloadconfig',
@@ -10,7 +10,7 @@ module.exports.config = {
   dependencies: {}
 };
 
-module.exports.run = async ({ args, message, event, api }) => {
+module.exports.run = async ({ event, api }) => {
   const { threadId, type } = event;
 
   const { reloadConfig } = require("../../utils/index");

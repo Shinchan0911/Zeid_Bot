@@ -1,20 +1,9 @@
 const handleCommand = require("./handle/handleCommand");
+const handleEvent = require("./handle/handleEvent");
 const logger = require("../utils/logger");
 
-function handleEvent(eventType, eventData, api) {
-  for (const [name, eventModule] of global.client.events) {
-    const targetEvents = eventModule.config.event_type;
-    if (Array.isArray(targetEvents) && targetEvents.includes(eventType)) {
-      try {
-        if (typeof eventModule.run === "function") {
-          eventModule.run({ api, event: eventData, eventType });
-        }
-      } catch (err) {
-        logger.log(`Lỗi khi xử lý event ${eventType} tại module ${name}: ${err.message}`, "error");
-      }
-    }
-  }
-}
+const Users = require("./controller/controllerUsers");
+const Threads = require("./controller/controllerThreads");
 
 function startListening(api) {
   if (!api?.listener?.on || !api.listener.start) {
@@ -22,15 +11,24 @@ function startListening(api) {
     return;
   }
 
-  api.listener.on("message", (event) => {
+  api.listener.on("message", async (event) => {
+    let threadData;
+
+    threadData = await Threads.getData(event.threadId);
+
+    const threadInfo = threadData?.data || {};
+    const prefix = threadInfo.prefix ? threadInfo.prefix : global.config.prefix;
+
     handleEvent("message", event, api);
 
     const { data } = event;
     const content = data?.content;
-    if (typeof content === "string" && content.startsWith(global.config.prefix)) {
-      handleCommand(content, event, api);
+
+    if (typeof content === "string" && content.startsWith(prefix)) {
+      handleCommand(content, event, api, threadInfo, prefix);
     }
   });
+
 
   api.listener.on("group_event", (event) => {
     handleEvent("group_event", event, api);

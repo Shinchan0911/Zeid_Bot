@@ -6,8 +6,8 @@ const semver = require("semver");
     await logger.printBanner();
 
     const nodeVersion = semver.parse(process.version);
-    if (nodeVersion.major < 18) {
-        logger.log(`Phiên bản Node.js ${process.version} không hỗ trợ. Vui lòng sử dụng Node.js 18 trở lên.`, "error");
+    if (nodeVersion.major < 20) {
+        logger.log(`Phiên bản Node.js ${process.version} không hỗ trợ. Vui lòng sử dụng Node.js 20 trở lên.`, "error");
         return process.exit(1);
     }
 

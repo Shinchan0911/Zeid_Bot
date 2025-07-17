@@ -1,18 +1,19 @@
 const logger = require("../../utils/logger");
 
-function handleEvent(eventType, event_input, api) {
-  const events = global.client.events.get(eventType.toLowerCase());
-  if (!events || events.length === 0) return;
+const Users = require("../controller/controllerUsers");
+const Threads = require("../controller/controllerThreads");
 
-  for (const event of events) {
-    try {
-      event.run({
-        api: api,       
-        event: event_input,
-      });
-    } catch (err) {
-      const name = event.config?.name || "unknown";
-      logger.log(`lỗi khi thực hiện event "${name}": ${err.message}`, 'error');
+function handleEvent(eventType, eventData, api) {
+  for (const [name, eventModule] of global.client.events) {
+    const targetEvents = eventModule.config.event_type;
+    if (Array.isArray(targetEvents) && targetEvents.includes(eventType)) {
+      try {
+        if (typeof eventModule.run === "function") {
+          eventModule.run({ api, event: eventData, eventType, Users, Threads });
+        }
+      } catch (err) {
+        logger.log(`Lỗi khi xử lý event ${eventType} tại module ${name}: ${err.message}`, "error");
+      }
     }
   }
 }
