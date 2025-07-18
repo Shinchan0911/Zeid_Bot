@@ -152,7 +152,7 @@ await Users.saveData("user_id", datauser);
 
 ```bash
 git clone https://github.com/Shinchan0911/Zeid_Bot
-cd zalo-bot
+cd zeid-bot
 npm install
 ```
 
