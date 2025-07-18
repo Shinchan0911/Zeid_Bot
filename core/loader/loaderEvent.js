@@ -17,7 +17,7 @@ function extractDependencies(filePath) {
   }
 }
 
-function loadEvents(dir = path.join(__dirname, "../..", "modules", "events")) {
+function loadEvents(dir = path.join(__dirname, "../..", "plugins", "events")) {
   const files = fs.readdirSync(dir).filter(file => file.endsWith(".js"));
   let shouldRestart = false;
 

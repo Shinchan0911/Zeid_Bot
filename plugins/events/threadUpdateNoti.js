@@ -166,6 +166,45 @@ module.exports.run = async function({ api, event }) {
                 }
                 break;
             }
+            // các event này chưa phân type nên bị trùng với event ghim tin nhắn
+            /*case GroupEventType.REORDER_PIN_TOPIC: {
+                 msg = `📌 ${actorName} đã sắp xếp lại các chủ đề đã ghim.`;
+                 break;
+             }
+             case GroupEventType.UPDATE_BOARD: {
+                 let title = "";
+                 if (data.groupTopic?.params) {
+                     try {
+                         const params = JSON.parse(data.groupTopic.params);
+                        title = params.title ? ` (chủ đề: ${params.title})` : "";
+                     } catch {}
+                 }
+                 msg = `📋 ${actorName} đã cập nhật bảng nhóm${title}.`;
+                 break;
+             }
+             case GroupEventType.REMOVE_BOARD: {
+                 let title = "";
+                 if (data.groupTopic?.params) {
+                     try {
+                         const params = JSON.parse(data.groupTopic.params);
+                         title = params.title ? ` (chủ đề: ${params.title})` : "";
+                     } catch {}
+                 }
+                 msg = `🗑️ ${actorName} đã xóa bảng nhóm${title}.`;
+                 break;
+             }
+             case GroupEventType.UPDATE_TOPIC: {
+                 msg = `📝 ${actorName} đã cập nhật chủ đề nhóm.`;
+                 break;
+             }
+             case GroupEventType.UNPIN_TOPIC: {
+                 msg = `📌 ${actorName} đã bỏ ghim chủ đề nhóm.`;
+                 break;
+             }
+             case GroupEventType.REMOVE_TOPIC: {
+                 msg = `❎ ${actorName} đã xóa chủ đề nhóm.`;
+                 break;
+             }*/
             case GroupEventType.ACCEPT_REMIND: {
                 let targetName = actorName;
                 let remindTitle = "";
@@ -207,18 +246,7 @@ module.exports.run = async function({ api, event }) {
         }
 
         if (msg?.trim()) {
-            const sentMessage = await api.sendMessage({ msg, attachments }, threadId, ThreadType.Group);
-
-            if (sentMessage?.msgId && sentMessage?.cliMsgId) {
-                setTimeout(() => {
-                    api.deleteMessage({
-                        cliMsgId: sentMessage.cliMsgId,
-                        msgId: sentMessage.msgId,
-                        uidFrom: sentMessage.uidFrom,
-                        onlyMe: false
-                    }, threadId, ThreadType.Group).catch(console.error);
-                }, 5000);
-            }
+            await api.sendMessage({ msg, attachments }, threadId, ThreadType.Group);
         }
 
     } catch (err) {

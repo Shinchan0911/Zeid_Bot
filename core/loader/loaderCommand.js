@@ -17,7 +17,7 @@ function extractDependencies(filePath) {
   }
 }
 
-function loadCommands(dir = path.join(__dirname, "../..", "modules", "commands")) {
+function loadCommands(dir = path.join(__dirname, "../..", "plugins", "commands")) {
   const files = fs.readdirSync(dir).filter(file => file.endsWith(".js"));
   let shouldRestart = false;
 
