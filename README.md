@@ -4,7 +4,7 @@
 
 📚 Xem tài liệu API tại: [https://tdung.gitbook.io/zca-js](https://tdung.gitbook.io/zca-js)
 
-## 📁 Ví dụ về lệnh
+## Tải liệu Plugins
 
 <details>
 <summary>📁 Lệnh mẫu</summary>
@@ -34,10 +34,6 @@ module.exports.run = async ({ args, event, api, Users, Thread }) => {
 
 </details>
 
----
-
-## 📁 Ví dụ về sự kiện
-
 <details>
 <summary>📁 Sự kiện mẫu</summary>
 
@@ -64,9 +60,6 @@ module.exports.run = async function({ api, event, eventType, Users, threads }) {
 
 </details>
 
----
-
-## 🌐 Biến toàn cục
 
 <details>
 <summary>📁 Các biến global</summary>
@@ -87,9 +80,6 @@ global.users.support[0] // ID support đầu tiên
 
 </details>
 
----
-
-## ⚙️ Cập nhật config
 
 <details>
 <summary>📁 Các hàm để cập nhật config</summary>
@@ -108,7 +98,6 @@ reloadConfig();
 ```
 </details>
 
----
 
 ## 🗃️ Database (Users & Threads)
 
