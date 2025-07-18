@@ -129,8 +129,6 @@ await Users.saveData("user_id", datauser);
 ```
 </details>
 
----
-
 > [!IMPORTANT]
 > 🚧 **Zeid Bot** hiện đang trong quá trình phát triển.
 > 
