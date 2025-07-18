@@ -4,7 +4,7 @@
 
 📚 Xem tài liệu API tại: [https://tdung.gitbook.io/zca-js](https://tdung.gitbook.io/zca-js)
 
-## Tải liệu Plugins
+📚 Tải liệu Plugins
 
 <details>
 <summary>📁 Lệnh mẫu</summary>
@@ -99,7 +99,7 @@ reloadConfig();
 </details>
 
 
-## 🗃️ Database (Users & Threads)
+🗃️ Database (Users & Threads)
 
 <details>
 <summary>🧵 Threads</summary>
@@ -131,7 +131,7 @@ await Users.saveData("user_id", datauser);
 
 ---
 
-## 📌 Important
+> [!IMPORTANT]
 
 > 🚧 Dự án **Zeid Bot** hiện đang trong quá trình phát triển.  
 >  
