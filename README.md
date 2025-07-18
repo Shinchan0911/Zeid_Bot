@@ -145,8 +145,6 @@ await Users.saveData("user_id", datauser);
 
 - **Node.js** phiên bản **v20 trở lên**
 
----
-
 ### 📦 Cài đặt Bot
 
 ```bash
@@ -168,7 +166,6 @@ npm install
 2. Mở file `qr.png` được tạo trong thư mục bot và quét mã bằng ứng dụng Zalo
 3. Sau khi đăng nhập thành công, bot sẽ tự động lưu **cookie** cho những lần đăng nhập tiếp theo
 
----
 
 ### ✅ Cách 2: Đăng nhập bằng **Cookie**
 
