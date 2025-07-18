@@ -137,6 +137,8 @@ await Users.saveData("user_id", datauser);
 >
 > 💡 Chúng tôi luôn hoan nghênh mọi sự hỗ trợ từ cộng đồng!
 
+---
+
 ## 🚀 Cài đặt
 
 ### 🔧 Yêu cầu
