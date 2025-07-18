@@ -2,6 +2,17 @@
 
 **Zeid Bot** là một chatbot Zalo được phát triển bằng Node.js, dựa trên thư viện [ZCA-JS](https://github.com/RFS-ADRENO/zca-js)
 
+> [!IMPORTANT]
+> 🚧 **Zeid Bot** hiện đang trong quá trình phát triển.
+> 
+> Nếu bạn gặp bất kỳ sự cố, lỗi hoặc vấn đề nào trong quá trình sử dụng,  
+> hãy **đóng góp** bằng cách báo lỗi hoặc gửi pull request.
+>
+> 💡 Chúng tôi luôn hoan nghênh mọi sự hỗ trợ từ cộng đồng!
+
+---
+
+## 📚 Tài liệu
 📚 Xem tài liệu API tại: [https://tdung.gitbook.io/zca-js](https://tdung.gitbook.io/zca-js)
 
 📚 Tải liệu Plugins
@@ -128,14 +139,6 @@ datauser.money = 1000;
 await Users.saveData("user_id", datauser);
 ```
 </details>
-
-> [!IMPORTANT]
-> 🚧 **Zeid Bot** hiện đang trong quá trình phát triển.
-> 
-> Nếu bạn gặp bất kỳ sự cố, lỗi hoặc vấn đề nào trong quá trình sử dụng,  
-> hãy **đóng góp** bằng cách báo lỗi hoặc gửi pull request.
->
-> 💡 Chúng tôi luôn hoan nghênh mọi sự hỗ trợ từ cộng đồng!
 
 ---
 
