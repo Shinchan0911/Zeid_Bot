@@ -152,9 +152,10 @@ module.exports.run = async function({ api, event, eventType, Users, threads }) {
 ### 📦 Cài đặt Bot
 
 ```bash
-git clone https://github.com/ten-ban/zalo-bot.git
+git clone [https://github.com/ten-ban/zalo-bot.git](https://github.com/Shinchan0911/Zeid_Bot)
 cd zalo-bot
 npm install
+npm start
 ```
 
 ---
