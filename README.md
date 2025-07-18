@@ -1,65 +1,8 @@
-
 # 🤖 Zeid Bot
 
-**Zeid Bot** là một chatbot Zalo được phát triển bằng **Node.js**, sử dụng thư viện [ZCA-JS](https://github.com/RFS-ADRENO/zca-js).
+**Zeid Bot** là một chatbot Zalo được phát triển bằng Node.js, dựa trên thư viện [ZCA-JS](https://github.com/RFS-ADRENO/zca-js)
 
-📚 **Tài liệu API**: [https://tdung.gitbook.io/zca-js](https://tdung.gitbook.io/zca-js)
-
----
-
-## 📦 Cài đặt
-
-### 🔧 Yêu cầu
-- Node.js **v20** hoặc mới hơn
-
-### 🚀 Cài đặt Bot
-
-```bash
-git clone https://github.com/Shinchan0911/Zeid_Bot
-cd zalo-bot
-npm install
-```
-
----
-
-## 🔐 Đăng nhập Bot
-
-### ✅ Cách 1: Đăng nhập bằng **QR Code**
-
-```bash
-npm start
-```
-
-- Mở file `qr.png` được tạo sau khi chạy bot
-- Dùng ứng dụng **Zalo** để quét mã
-- Bot sẽ tự lưu **cookie** cho các lần chạy sau
-
----
-
-### ✅ Cách 2: Đăng nhập bằng **Cookie**
-
-1. Tạo file `account.json` với nội dung:
-
-```json
-{
-  "imei": "Imei_Cua_Ban",
-  "userAgent": "userAgent_Cua_Ban",
-  "cookie": "cookie.json"
-}
-```
-
-2. Thêm file `cookie.json` và dán nội dung cookie Zalo
-
-3. Chạy bot:
-
-```bash
-npm start
-```
-
-📘 Hướng dẫn lấy cookie:  
-👉 [https://tdung.gitbook.io/zca-js/dang-nhap/dang-nhap-voi-cookie](https://tdung.gitbook.io/zca-js/dang-nhap/dang-nhap-voi-cookie)
-
----
+📚 Xem tài liệu API tại: [https://tdung.gitbook.io/zca-js](https://tdung.gitbook.io/zca-js)
 
 ## 📁 Ví dụ về lệnh
 
@@ -202,11 +145,72 @@ await Users.saveData("user_id", datauser);
 ## 📌 Important
 
 > 🚧 Dự án **Zeid Bot** hiện đang trong quá trình phát triển.  
-> Nếu bạn gặp sự cố, lỗi hoặc vấn đề nào, hãy **đóng góp** bằng cách báo lỗi hoặc gửi pull request.  
+>  
+> Nếu bạn gặp bất kỳ sự cố, lỗi hoặc vấn đề nào trong quá trình sử dụng,  
+> **hãy đóng góp** bằng cách báo lỗi hoặc gửi pull request.  
+>  
 > Chúng tôi luôn hoan nghênh mọi sự hỗ trợ từ cộng đồng!
+
+---
+
+## 🚀 Cài đặt
+
+### 🔧 Yêu cầu
+
+- **Node.js** phiên bản **v20 trở lên**
+
+---
+
+### 📦 Cài đặt Bot
+
+```bash
+git clone https://github.com/Shinchan0911/Zeid_Bot
+cd zalo-bot
+npm install
+```
+
+---
+
+## 🔐 Đăng nhập Bot
+
+### ✅ Cách 1: Đăng nhập bằng **QR Code**
+
+1. Chạy bot bằng lệnh:
+   ```bash
+   npm start
+   ```
+2. Mở file `qr.png` được tạo trong thư mục bot và quét mã bằng ứng dụng Zalo
+3. Sau khi đăng nhập thành công, bot sẽ tự động lưu **cookie** cho những lần đăng nhập tiếp theo
+
+---
+
+### ✅ Cách 2: Đăng nhập bằng **Cookie**
+
+1. Tạo file `account.json` với nội dung:
+
+   ```json
+   {
+     "imei": "Imei_Cua_Ban",
+     "userAgent": "userAgent_Cua_Ban",
+     "cookie": "cookie.json"
+   }
+   ```
+
+2. Thay thế các giá trị `imei`, `userAgent`
+
+3. Tạo file `cookie.json` và dán nội dung cookie Zalo vào
+4. Chạy bot bằng lệnh:
+   ```bash
+   npm start
+   ```
+
+📘 Xem hướng dẫn chi tiết cách lấy cookie tại:  
+👉 [https://tdung.gitbook.io/zca-js/dang-nhap/dang-nhap-voi-cookie](https://tdung.gitbook.io/zca-js/dang-nhap/dang-nhap-voi-cookie)
 
 ---
 
 ## 📄 Giấy phép
 
 Phát hành theo giấy phép **MIT License**
+
+---
