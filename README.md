@@ -132,13 +132,12 @@ await Users.saveData("user_id", datauser);
 ---
 
 > [!IMPORTANT]
-
-> 🚧 Dự án **Zeid Bot** hiện đang trong quá trình phát triển.  
->  
+> 🚧 **Zeid Bot** hiện đang trong quá trình phát triển.
+> 
 > Nếu bạn gặp bất kỳ sự cố, lỗi hoặc vấn đề nào trong quá trình sử dụng,  
-> **hãy đóng góp** bằng cách báo lỗi hoặc gửi pull request.  
->  
-> Chúng tôi luôn hoan nghênh mọi sự hỗ trợ từ cộng đồng!
+> hãy **đóng góp** bằng cách báo lỗi hoặc gửi pull request.
+>
+> 💡 Chúng tôi luôn hoan nghênh mọi sự hỗ trợ từ cộng đồng!
 
 ## 🚀 Cài đặt
 
