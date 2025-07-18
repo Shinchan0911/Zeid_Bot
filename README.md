@@ -155,7 +155,6 @@ module.exports.run = async function({ api, event, eventType, Users, threads }) {
 git clone [https://github.com/ten-ban/zalo-bot.git](https://github.com/Shinchan0911/Zeid_Bot)
 cd zalo-bot
 npm install
-npm start
 ```
 
 ---
@@ -166,7 +165,7 @@ npm start
 
 1. Chạy bot bằng lệnh:
    ```bash
-   node index.js
+   npm start
    ```
 2. Mở file `qr.png` được tạo trong thư mục bot và quét mã bằng ứng dụng Zalo
 3. Sau khi đăng nhập thành công, bot sẽ tự động lưu **cookie** cho những lần đăng nhập tiếp theo
@@ -188,6 +187,10 @@ npm start
 2. Thay thế các giá trị `imei`, `userAgent`
 
 3. Tạo file `cookie.json` và dán nội dung cookie Zalo vào
+4. Chạy bot bằng lệnh:
+   ```bash
+   npm start
+   ```
 
 📘 Xem hướng dẫn chi tiết cách lấy cookie tại:  
 👉 [https://tdung.gitbook.io/zca-js/dang-nhap/dang-nhap-voi-cookie](https://tdung.gitbook.io/zca-js/dang-nhap/dang-nhap-voi-cookie)
