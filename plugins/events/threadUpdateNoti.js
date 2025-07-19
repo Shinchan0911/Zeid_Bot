@@ -8,7 +8,7 @@ module.exports.config = {
     event_type: ["group_event", "message"],
     version: "1.1.0",
     author: "NLam182",
-    description: "Thông báo chi tiết tất cả hoạt động cập nhật trong nhóm và tự xóa sau 5 giây."
+    description: "Thông báo chi tiết tất cả hoạt động cập nhật trong nhóm."
 };
 
 const recentTopicActions = new Map();
