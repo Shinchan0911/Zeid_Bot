@@ -1,14 +1,24 @@
 {
   "name": "zeid_bot",
-  "version": "1.0.0-Beta",
+  "version": "1.0.0-beta",
+  "description": "Chatbot Zalo Node.js dựa trên ZCA-JS.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "keywords": ["zalo", "chatbot", "zca-js", "nodejs", "bot"],
   "author": "ShinTHL09, NLam182",
   "license": "MIT",
-  "description": "chatbot Zalo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Shinchan0911/Zeid_Bot.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Shinchan0911/Zeid_Bot/issues"
+  },
+  "homepage": "https://github.com/Shinchan0911/Zeid_Bot#readme",
   "dependencies": {
     "axios": "^1.10.0",
     "better-sqlite3": "^12.2.0",
@@ -19,5 +29,8 @@
     "string-similarity": "^4.0.4",
     "yaml": "^2.8.0",
     "zca-js": "latest"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
   }
 }
