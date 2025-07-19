@@ -173,7 +173,7 @@ npm install
 3. Sau khi đăng nhập thành công, bot sẽ tự động lưu **cookie** cho những lần đăng nhập tiếp theo
 
 📘 Xem tài liệu chi tiết tại:  
-👉 [https://tdung.gitbook.io/zca-js/dang-nhap/dang-nhap-voi-cookie](https://tdung.gitbook.io/zca-js/dang-nhap/dang-nhap-voi-qrcode)
+👉 [https://tdung.gitbook.io/zca-js/dang-nhap/dang-nhap-voi-qrcode](https://tdung.gitbook.io/zca-js/dang-nhap/dang-nhap-voi-qrcode)
 
 ### ✅ Cách 2: Đăng nhập bằng **Cookie**
 
