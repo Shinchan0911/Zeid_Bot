@@ -1,6 +1,6 @@
 {
   "name": "zeid_bot",
-  "version": "1.0.0",
+  "version": "1.0.0_beta",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
