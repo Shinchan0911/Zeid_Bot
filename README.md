@@ -22,24 +22,23 @@
 
 ```javascript
 module.exports.config = {
-  name: 'example',
-  version: '1.0.0',
-  role: 0,
-  author: 'ShinTHL09',
-  description: 'Lệnh mẫu',
-  category: 'Tiện ích',
-  usage: 'restart',
-  cooldowns: 2,
-  dependencies: {}
+    name: "example", // Tên của sự kiện
+    event_type: ["message"], // Loại event, có thể nhận nhiều event 1 lúc
+    version: "1.0.0", // Phiên bản của sự kiện
+    author: "ShinTHL09 ", // Tác giả của sự kiện
+    description: "Sự kiện mẫu", // Thông tin sự kiện
+    dependencies: {} // Các thư viện cần thiết (Bot sẽ tự cài khi load sự kiện)
 };
 
-module.exports.onLoad = async function({ api }) {
-  console.log("Lệnh example đã được load");
-};
+module.exports.onLoad =  async function({ api }) {
+  console.log("Sự kiện example đã được load");
+}
 
-module.exports.run = async ({ args, event, api, Users, Thread }) => {
-  const { threadId, type } = event;
-  return api.sendMessage("Đây là lệnh mẫu", threadId, type);
+// Bot nhại tin nhắn
+module.exports.run = async function({ api, event, eventType, Users, threads }) {
+    const { threaId, type, data } = event;
+    const msg = data.content;
+    return api.sendMessage(msg, threaId, type);
 };
 ```
 
@@ -50,22 +49,26 @@ module.exports.run = async ({ args, event, api, Users, Thread }) => {
 
 ```javascript
 module.exports.config = {
-  name: "example",
-  event_type: ["message"],
-  version: "1.0.0",
-  author: "ShinTHL09",
-  description: "Sự kiện mẫu",
-  dependencies: {}
+  name: 'example', // Tên của lệnh
+  version: '1.0.0', // Phiên bản của lệnh
+  role: 0, // Quyền hạn 0: thành viên, 1: support bot, 2: admin bot
+  author: 'ShinTHL09', // Tác giả của lệnh
+  description: 'Lệnh mẫu', // Thông tin lệnh
+  category: 'Tiện ích', // Mục của lệnh
+  usage: 'restart', // Cách dùng lệnh
+  cooldowns: 2, // Thời gian hồi lệnh
+  dependencies: {} // Các thư viện cần thiết (Bot sẽ tự cài khi load lệnh)
 };
 
-module.exports.onLoad = async function({ api }) {
-  console.log("Sự kiện example đã được load");
-};
+module.exports.onLoad =  async function({ api }) {
+  console.log("Lệnh example đã được load")
+}
 
-module.exports.run = async function({ api, event, eventType, Users, threads }) {
-  const { threaId, type, data } = event;
-  const msg = data.content;
-  return api.sendMessage(msg, threaId, type);
+module.exports.run = async ({ args, event, api, Users, Thread }) => {
+  const { threadId, type } = event;
+
+  return api.sendMessage("Đây là lệnh mẫu", threadId, type);
+
 };
 ```
 
@@ -98,11 +101,11 @@ global.users.support[0] // ID support đầu tiên
 ```js
 const { updateConfigArray, updateConfigValue, reloadConfig } = require("../../utils/index");
 
-updateConfigArray(key, newArray);
+updateConfigArray(key, newArray); // Sửa array trong config
 // Example: updateConfigArray("admin_bot", ["1", "2"])
 
-updateConfigValue(key, newValue);
-// Example: updateConfigValue("prefix", "1")
+updateConfigValue(key, newValue); // Sửa giá trị trong config
+// Example: updateConfigValue("prefix", "!")
 
 reloadConfig();
 // Reload lại file config
@@ -169,6 +172,8 @@ npm install
 2. Mở file `qr.png` được tạo trong thư mục bot và quét mã bằng ứng dụng Zalo
 3. Sau khi đăng nhập thành công, bot sẽ tự động lưu **cookie** cho những lần đăng nhập tiếp theo
 
+📘 Xem tài liệu chi tiết tại:  
+👉 [[https://tdung.gitbook.io/zca-js/dang-nhap/dang-nhap-voi-cookie](https://tdung.gitbook.io/zca-js/dang-nhap/dang-nhap-voi-qrcode)
 
 ### ✅ Cách 2: Đăng nhập bằng **Cookie**
 
