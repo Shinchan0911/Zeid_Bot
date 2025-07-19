@@ -8,8 +8,10 @@ save_cookie: true # tư động lưu lại cookie sau khi đăng nhập bắng q
 # cấu hình bot
 prefix: "/"
 name_bot: "Zeid Bot"
+# sử dụng lệnh /id để lấy id
+# chú ý: mỗi acc chạy bot khi check sẽ ra 1 id khác nhau nên nếu đổi acc chạy bot phải đổi id (do zalỏ lưu data ở local)
 admin_bot:
-  - "5741276862607037132"
+  - "1"
   - "2"
 support_bot:
   - "1"
