@@ -8,7 +8,7 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": ["zalo", "chatbot", "zca-js", "nodejs", "bot"],
+  "keywords": ["zalo", "chatbot", "nodejs", "zeid-bot"],
   "author": "ShinTHL09, NLam182",
   "license": "MIT",
   "repository": {
