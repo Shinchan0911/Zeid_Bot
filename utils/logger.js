@@ -1,7 +1,9 @@
 const chalk = require('chalk');
 const { DateTime } = require("luxon");
+const axios = require("axios");
 
-function printBanner() {
+async function printBanner() {
+  const newVersion = (await axios.get("https://raw.githubusercontent.com/Shinchan0911/Zeid_Bot/refs/heads/main/package.json")).data.version;
   const projectVersion = require("../package.json").version;
   console.clear();
   console.log(
@@ -20,6 +22,7 @@ function printBanner() {
   console.log("» " + chalk.green("Author : ") + chalk.white("ShinTHL09, NLam182"));
   console.log("» " + chalk.green("Github : ") + chalk.underline("https://github.com/Shinchan0911/Zeid_Bot"));
   console.log(chalk.gray("═══════════════════════════════════════════════════════════════════\n"));
+  if (projectVersion != newVersion) log("New version: " + newVersion + "\n", "warn");
 }
 
 function getTimestamp() {
