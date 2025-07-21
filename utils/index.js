@@ -28,7 +28,11 @@ const getJsonData = (filePath, defaultData = {}) => {
     const raw = fs.readFileSync(filePath, "utf8");
     return JSON.parse(raw);
 };
-
+function convertTimestamp(timestamp) {
+    const date = new Date(Number(timestamp));
+    return date.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+}
+// CONFIG
 function updateConfigArray(key, newArray) {
     const configPath = path.join(__dirname, "..", "config.yml");
     const lines = fs.readFileSync(configPath, "utf8").split("\n");
@@ -106,11 +110,86 @@ function reloadConfig() {
         process.exit(1);
     }
 }
+// MESSAGE CACHE
+const messageCachePath = path.join(__dirname, "..", "data", "message_cache.json");
+
+fs.mkdirSync(path.dirname(messageCachePath), { recursive: true });
+if (!fs.existsSync(messageCachePath)) {
+    fs.writeFileSync(messageCachePath, "{}", "utf-8");
+}
+
+function cleanOldMessages() {
+    let messageCache = readMessageJson();
+    const oneDayAgo = Date.now() - 24 * 60 * 60 * 1000;
+
+    Object.keys(messageCache).forEach((key) => {
+        if (messageCache[key].timestamp < oneDayAgo) {
+            delete messageCache[key];
+        }
+    });
+}
+
+function readMessageJson() {
+    try {
+        const data = fs.readFileSync(messageCachePath, "utf-8");
+        return JSON.parse(data);
+    } catch (error) {
+        logger.log("Lỗi khi đọc file message.json: " + error.message, "error");
+        return {};
+    }
+}
+
+function writeMessageJson(data) {
+    try {
+        fs.writeFileSync(messageCachePath, JSON.stringify(data, null, 2), "utf-8");
+    } catch (error) {
+        logger.log("Lỗi khi ghi file message.json: " + error.message, "error");
+    }
+}
+
+function getMessageCache() {
+    let messageCache = readMessageJson();
+    return messageCache;
+}
+
+function getMessageCacheByMsgId(msgId) {
+    let messageCache = readMessageJson();
+    return Object.values(messageCache).find((message) => message.msgId === msgId);
+}
+
+function updateMessageCache(data) {
+    let messageCache = readMessageJson();
+    try {
+        const timestamp = new Date().toISOString();
+        const filtered = {
+            timestamp: data.data.ts,
+            timestampString: timestamp,
+            msgId: data.data.msgId,
+            cliMsgId: data.data.cliMsgId,
+            msgType: data.data.msgType,
+            uidFrom: data.data.uidFrom,
+            idTo: data.data.idTo,
+            dName: data.data.dName,
+            content: data.data.content,
+            threadId: data.threadId,
+            type: data.type
+        };
+        messageCache[data.data.cliMsgId] = filtered;
+        writeMessageJson(messageCache);
+    } catch (e) {
+        logger.log("Lỗi khi update messageCache: " + e.message, "error");
+    }
+}
 
 module.exports = {
     updateConfigArray,
     updateConfigValue,
     reloadConfig,
     saveBase64Image,
-    getJsonData
+    getJsonData,
+    updateMessageCache,
+    getMessageCache,
+    getMessageCacheByMsgId,
+    cleanOldMessages,
+    convertTimestamp
 };

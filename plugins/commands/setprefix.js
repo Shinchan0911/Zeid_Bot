@@ -9,6 +9,33 @@ module.exports.config = {
     cooldowns: 2,
 };
 
+module.exports.handleEvent = async function({ api, event, Threads }) {
+    const { threadId, type } = event;
+    try {
+        const { prefix } = global.config;
+
+        var threadSetting = (await Threads.getData(event.threadId)).data || {};
+
+        let prefixThread = threadSetting.prefix || prefix;
+
+        const lowerBody = event.data.content.toLowerCase();
+
+        if (
+            lowerBody === "prefix" ||
+            lowerBody === "prefix bot là gì" ||
+            lowerBody === "quên prefix r" ||
+            lowerBody === "dùng sao"
+        ) {
+            api.sendMessage(
+            `✏️ Prefix của nhóm: ${prefixThread}\n📎 Prefix hệ thống: ${prefix}`,
+            threadId,
+            type
+            );
+        }
+    } catch (e) {
+    }
+};
+
 module.exports.run = async ({ api, event, args, Threads }) => {
     if (typeof args[0] === "undefined") return api.sendMessage(`⚠️ Vui lòng nhập prefix mới để thay đổi prefix của nhóm`, event.threadId, event.type);
     const prefix = args[0].trim();

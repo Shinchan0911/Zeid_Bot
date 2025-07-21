@@ -1,6 +1,7 @@
 const handleCommand = require("./handle/handleCommand");
 const handleEvent = require("./handle/handleEvent");
 const logger = require("../utils/logger");
+const { updateMessageCache } = require("../utils/index");
 
 const Users = require("./controller/controllerUsers");
 const Threads = require("./controller/controllerThreads");
@@ -12,6 +13,7 @@ function startListening(api) {
   }
 
   api.listener.on("message", async (event) => {
+    updateMessageCache(event);
     let threadData;
 
     threadData = await Threads.getData(event.threadId);

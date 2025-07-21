@@ -16,6 +16,16 @@ function handleEvent(eventType, eventData, api) {
       }
     }
   }
+
+  for (const [name, commandModule] of global.client.commands) {
+    if (typeof commandModule.handleEvent === "function") {
+      try {
+        commandModule.handleEvent({ api, event: eventData, eventType, Users, Threads });
+      } catch (err) {
+        logger.log(`Lỗi khi xử lý handleEvent trong command ${name}: ${err.message}`, "error");
+      }
+    }
+  }
 }
 
 module.exports = handleEvent;

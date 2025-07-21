@@ -8,7 +8,7 @@ module.exports.config = {
     event_type: ["group_event", "message"],
     version: "1.1.0",
     author: "NLam182",
-    description: "Thông báo chi tiết tất cả hoạt động cập nhật trong nhóm."
+    description: "Thông báo chi tiết tất cả hoạt động cập nhật trong nhóm và tự xóa sau 5 giây."
 };
 
 const recentTopicActions = new Map();
@@ -246,7 +246,7 @@ module.exports.run = async function({ api, event }) {
         }
 
         if (msg?.trim()) {
-            await api.sendMessage({ msg, attachments }, threadId, ThreadType.Group);
+            await api.sendMessage({ msg, attachments, ttl: 5000 }, threadId, ThreadType.Group);
         }
 
     } catch (err) {
