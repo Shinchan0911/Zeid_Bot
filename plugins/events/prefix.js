@@ -8,26 +8,29 @@ module.exports.config = {
 
 module.exports.run = async function({ api, event, Threads }) {
     const { threadId, type } = event;
+    try {
+        const { prefix } = global.config;
 
-    const { prefix } = global.config;
+        var threadSetting = (await Threads.getData(event.threadId)).data || {};
 
-    var threadSetting = (await Threads.getData(event.threadId)).data || {};
+        let prefixThread = threadSetting.prefix || prefix;
 
-    let prefixThread = threadSetting.prefix || prefix;
+        const lowerBody = event.data.content.toLowerCase();
 
-    const lowerBody = event.data.content.toLowerCase();
+        if (
+            lowerBody === "prefix" ||
+            lowerBody === "prefix bot là gì" ||
+            lowerBody === "quên prefix r" ||
+            lowerBody === "dùng sao"
+        ) {
+            api.sendMessage(
+            `✏️ Prefix của nhóm: ${prefixThread}\n📎 Prefix hệ thống: ${prefix}`,
+            threadId,
+            type
+            );
+        }
+    } catch (e) {
 
-    if (
-        lowerBody === "prefix" ||
-        lowerBody === "prefix bot là gì" ||
-        lowerBody === "quên prefix r" ||
-        lowerBody === "dùng sao"
-    ) {
-        api.sendMessage(
-        `✏️ Prefix của nhóm: ${prefixThread}\n📎 Prefix hệ thống: ${prefix}`,
-        threadId,
-        type
-    );
-  }
+    }
 
 };
