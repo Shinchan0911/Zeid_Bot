@@ -64,7 +64,11 @@ module.exports.config = {
   dependencies: {} // Các thư viện cần thiết (Bot sẽ tự cài khi load lệnh)
 };
 
-module.exports.onLoad =  async function({ api }) {
+module.exports.handleEvent = async ({ api, event, eventType, Users, Threads }) => {
+  console.log("đã có event xảy ra");
+}
+
+module.exports.onLoad = async ({ api }) => {
   console.log("Lệnh example đã được load")
 }
 
