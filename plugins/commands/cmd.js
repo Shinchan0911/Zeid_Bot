@@ -7,7 +7,7 @@ module.exports.config = {
     version: "1.0.0",
     role: 2,
     author: "NLam182",
-    description: "Quản lý và kiểm soát các module lệnh của bot.",
+    description: "Quản lý và kiểm soát các plugin lệnh của bot.",
     category: "Hệ thống",
     usage: ".cmd <load|unload|loadall|unloadall|list|info> [tên lệnh]",
     cooldowns: 2
@@ -15,33 +15,60 @@ module.exports.config = {
 
 async function loadModule(api, event, moduleName) {
     const { threadId, type } = event;
+    const commandPath = path.join(__dirname, `${moduleName}.js`);
     try {
-        const commandPath = path.join(__dirname, `${moduleName}.js`);
         if (!fs.existsSync(commandPath)) {
-            return api.sendMessage(`Không tìm thấy module '${moduleName}'.`, threadId, type);
+            return api.sendMessage(`Không tìm thấy plugin '${moduleName}'.`, threadId, type);
         }
+
         delete require.cache[require.resolve(commandPath)];
         const command = require(commandPath);
+
         if (!command.config || !command.config.name || typeof command.run !== "function") {
-            return api.sendMessage(`Module '${moduleName}' không đúng định dạng.`, threadId, type);
+            return api.sendMessage(`Lệnh '${moduleName}' không hợp lệ hoặc thiếu thông tin.`, threadId, type);
         }
+
         const dependencies = command.config.dependencies || {};
+        let installedNewDep = false;
+
         for (const [pkgName, version] of Object.entries(dependencies)) {
             try {
                 require.resolve(pkgName);
             } catch {
-                api.sendMessage(`Đang cài package '${pkgName}' cho lệnh '${command.config.name}'...`, threadId, type);
-                execSync(`npm install ${pkgName}@${version || "latest"} --no-save`, { stdio: "inherit" });
+                api.sendMessage(`🔄 Đang cài package: ${pkgName}@${version || "latest"}`, threadId, type);
+                try {
+                    execSync(`npm install ${pkgName}@${version || "latest"}`, {
+                        stdio: "inherit",
+                        cwd: path.join(__dirname, "../../")
+                    });
+                    installedNewDep = true;
+                } catch (err) {
+                    return api.sendMessage(`❌ Lỗi khi cài ${pkgName}: ${err.message}`, threadId, type);
+                }
             }
         }
-        global.client.commands.set(command.config.name, command);
-        if (command.onLoad) {
-            await command.onLoad({ api });
+
+        const name = command.config.name.toLowerCase();
+        global.client.commands.set(name, command);
+
+        if (typeof command.onLoad === "function") {
+            try {
+                command.onLoad({ api });
+            } catch (e) {
+                api.sendMessage(`⚠️ Lỗi trong onLoad của ${name}: ${e.message}`, threadId, type);
+            }
         }
-        return api.sendMessage(`✅ Đã tải thành công lệnh '${command.config.name}'.`, threadId, type);
+
+        if (installedNewDep) {
+            api.sendMessage("🔁 Đã cài thêm package. Bot sẽ khởi động lại để áp dụng...", threadId, type);
+            process.exit(2);
+        } else {
+            api.sendMessage(`✅ Đã tải lệnh '${moduleName}' thành công.`, threadId, type);
+        }
+
     } catch (error) {
         console.error(`Lỗi khi tải lệnh ${moduleName}:`, error);
-        return api.sendMessage(`Đã xảy ra lỗi khi tải lệnh '${moduleName}':\n${error.message}`, threadId, type);
+        return api.sendMessage(`❌ Lỗi khi tải lệnh '${moduleName}':\n${error.message}`, threadId, type);
     }
 }
 
@@ -52,9 +79,7 @@ async function unloadModule(api, event, moduleName) {
     }
     global.client.commands.delete(moduleName);
     const commandPath = path.join(__dirname, `${moduleName}.js`);
-    if (require.cache[require.resolve(commandPath)]) {
-        delete require.cache[require.resolve(commandPath)];
-    }
+    delete require.cache[require.resolve(commandPath)];
     return api.sendMessage(`✅ Đã gỡ thành công lệnh '${moduleName}'.`, threadId, type);
 }
 
@@ -81,70 +106,65 @@ module.exports.run = async function({ api, event, args }) {
 
         case "loadall":
             try {
-                await api.sendMessage("Bắt đầu quá trình tải lại tất cả các lệnh...", threadId, type);
+                await api.sendMessage("🔄 Bắt đầu tải lại tất cả lệnh...", threadId, type);
                 Object.keys(require.cache).forEach(key => {
-                    if (key.startsWith(path.join(__dirname))) {
-                        delete require.cache[key];
-                    }
+                    if (key.startsWith(__dirname)) delete require.cache[key];
                 });
                 global.client.commands.clear();
                 const loaderCommand = require("../../core/loader/loaderCommand");
                 await loaderCommand();
                 await api.sendMessage(`✅ Đã tải lại thành công ${global.client.commands.size} lệnh.`, threadId, type);
             } catch (error) {
-                console.error("Lỗi khi tải lại lệnh:", error);
-                await api.sendMessage(`Đã xảy ra lỗi trong quá trình tải lại:\n${error.message}`, threadId, type);
+                console.error("Lỗi khi loadall:", error);
+                await api.sendMessage(`❌ Lỗi khi tải lại lệnh:\n${error.message}`, threadId, type);
             }
             break;
 
         case "unloadall":
             try {
-                const commandDir = path.join(__dirname);
-                const allCommandFiles = fs.readdirSync(commandDir).filter(file => file.endsWith(".js"));
-                let unloadedCount = 0;
-                for (const file of allCommandFiles) {
-                    if (file === "cmd.js") continue;
-                    const moduleNameToUnload = path.basename(file, ".js");
-                    if (global.client.commands.has(moduleNameToUnload)) {
-                        global.client.commands.delete(moduleNameToUnload);
-                        delete require.cache[require.resolve(path.join(commandDir, file))];
-                        unloadedCount++;
+                const files = fs.readdirSync(__dirname).filter(f => f.endsWith(".js") && f !== "cmd.js");
+                let count = 0;
+                for (const file of files) {
+                    const name = file.replace(".js", "");
+                    if (global.client.commands.has(name)) {
+                        global.client.commands.delete(name);
+                        delete require.cache[require.resolve(path.join(__dirname, file))];
+                        count++;
                     }
                 }
-                await api.sendMessage(`✅ Đã gỡ thành công ${unloadedCount} lệnh.`, threadId, type);
+                await api.sendMessage(`✅ Đã gỡ ${count} lệnh thành công.`, threadId, type);
             } catch (error) {
-                console.error("Lỗi khi gỡ tất cả lệnh:", error);
-                await api.sendMessage(`Đã xảy ra lỗi khi gỡ lệnh:\n${error.message}`, threadId, type);
+                console.error("Lỗi khi gỡ:", error);
+                await api.sendMessage(`❌ Lỗi khi gỡ lệnh:\n${error.message}`, threadId, type);
             }
             break;
 
         case "list":
-            const commandNames = Array.from(global.client.commands.keys());
-            api.sendMessage(`Hiện tại có ${commandNames.length} lệnh đang hoạt động:\n\n${commandNames.join(", ")}`, threadId, type);
+            const list = Array.from(global.client.commands.keys());
+            api.sendMessage(`📦 Hiện có ${list.length} lệnh đang hoạt động:\n${list.join(", ")}`, threadId, type);
             break;
 
         case "info":
             if (!moduleName) return api.sendMessage("Vui lòng nhập tên lệnh cần xem thông tin.", threadId, type);
-            const command = global.client.commands.get(moduleName);
-            if (!command) return api.sendMessage(`Lệnh '${moduleName}' không tồn tại hoặc chưa được tải.`, threadId, type);
-            
-            const { name, version, role, author, description, category, usage, cooldowns, dependencies } = command.config;
-            const roleText = role === 0 ? "Người dùng" : role === 1 ? "Support" : "Admin";
-            const depsText = dependencies ? Object.keys(dependencies).join(", ") : "Không có";
+            const cmd = global.client.commands.get(moduleName);
+            if (!cmd) return api.sendMessage(`Lệnh '${moduleName}' chưa được tải hoặc không tồn tại.`, threadId, type);
+            const config = cmd.config;
+            const roleText = config.role === 0 ? "Người dùng" : config.role === 1 ? "Support" : "Admin";
+            const depsText = config.dependencies ? Object.keys(config.dependencies).join(", ") : "Không có";
 
-            const infoMsg = `🔎 Thông tin lệnh: ${name.toUpperCase()}\n\n` +
-                          `- Mô tả: ${description}\n` +
-                          `- Tác giả: ${author}\n` +
-                          `- Phiên bản: ${version}\n` +
-                          `- Quyền hạn: ${roleText}\n` +
-                          `- Cách dùng: ${usage}\n` +
-                          `- Dependencies: ${depsText}`;
-            api.sendMessage(infoMsg, threadId, type);
+            const msg = `🔎 Thông tin lệnh: ${config.name}\n\n` +
+                        `- Mô tả: ${config.description}\n` +
+                        `- Tác giả: ${config.author}\n` +
+                        `- Phiên bản: ${config.version}\n` +
+                        `- Quyền hạn: ${roleText}\n` +
+                        `- Cách dùng: ${config.usage}\n` +
+                        `- Dependencies: ${depsText}`;
+            api.sendMessage(msg, threadId, type);
             break;
 
         default:
             api.sendMessage(
-                "Quản lý module bot\n\n" +
+                "📚 Quản lý module bot\n\n" +
                 "cmd load <lệnh> - Tải một lệnh\n" +
                 "cmd unload <lệnh> - Gỡ một lệnh\n" +
                 "cmd loadall - Tải lại tất cả lệnh\n" +
