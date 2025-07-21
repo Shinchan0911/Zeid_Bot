@@ -22,7 +22,6 @@ module.exports.run = async ({ api, event, args, Threads }) => {
         var data = (await Threads.getData(String(event.threadId))).data || {};
         data.prefix = prefix;
         await Threads.setData(event.threadId, data);
-        console.log(data);
         return api.sendMessage(`☑️ Đã thay đổi prefix của nhóm thành: ${prefix}`, event.threadId, event.type);
     }
 };
