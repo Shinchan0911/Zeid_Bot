@@ -1,6 +1,6 @@
 {
   "name": "zeid_bot",
-  "version": "1.0.0-beta",
+  "version": "1.0.1-beta",
   "description": "Chatbot Zalo Node.js dựa trên ZCA-JS.",
   "main": "index.js",
   "scripts": {
