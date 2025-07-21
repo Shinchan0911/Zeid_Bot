@@ -46,7 +46,6 @@ module.exports.run = async ({ args, event, api, Users }) => {
         const amountToAdd = parseInt(amountArg);
         userData.money += amountToAdd;
         await Users.setData(targetID, userData);
-        console.log(userData);
         return api.sendMessage(
           `✅ Đã cộng thêm ${amountToAdd.toLocaleString('vi-VN')}₫ cho ${targetName}\n💰 Tổng cộng: ${userData.money.toLocaleString('vi-VN')}₫`,
           threadId,
