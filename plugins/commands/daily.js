@@ -6,7 +6,7 @@ module.exports.config = {
   description: 'Nhận thưởng mỗi ngày',
   category: 'Kiếm tiền',
   usage: 'daily',
-  cooldowns: 5,
+  cooldowns: 2,
   rewardAmount: 10000, // số tiền thưởng mỗi ngày
   cooldownTime: 12 * 60 * 60 * 1000 // thời gian chờ: 12 giờ
 };

@@ -8,7 +8,7 @@ module.exports.config = {
   description: "Thêm người dùng vào nhóm bằng User ID hoặc số điện thoại.",
   category: "Quản lý nhóm",
   usage: "adduser <userId_hoac_sdt>",
-  cooldowns: 5,
+  cooldowns: 2,
   dependencies: {}
 };
 

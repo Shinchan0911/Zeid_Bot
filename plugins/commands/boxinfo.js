@@ -11,7 +11,7 @@ module.exports.config = {
     description: "Hiển thị thông tin chi tiết của nhóm chat",
     category: "Tiện ích",
     usage: "<prefix>info",
-    cooldowns: 5
+    cooldowns: 2
 };
 
 module.exports.run = async function({ api, event }) {

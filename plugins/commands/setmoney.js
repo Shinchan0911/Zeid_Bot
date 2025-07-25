@@ -53,6 +53,21 @@ module.exports.run = async ({ args, event, api, Users }) => {
         );
       }
 
+      case 'take': {
+        const amountArg = mention ? args[2] : args[1];
+        if (!amountArg || isNaN(amountArg)) {
+          return api.sendMessage("❌ Dùng: setmoney take [@tag] [số tiền]", threadId, type);
+        }
+        const amountToTake = parseInt(amountArg);
+        userData.money -= amountToTake;
+        await Users.setData(targetID, userData);
+        return api.sendMessage(
+          `✅ Đã lấy ${amountToTake.toLocaleString('vi-VN')}₫ của ${targetName}\n💰 Tổng cộng: ${userData.money.toLocaleString('vi-VN')}₫`,
+          threadId,
+          type
+        );
+      }
+
       default:
         return api.sendMessage("❌ Lệnh không hợp lệ. Dùng: setmoney set/add [@tag] [số tiền]", threadId, type);
     }

@@ -6,7 +6,7 @@ module.exports.config = {
     description: "Lấy userId của người dùng, hoặc ID của nhóm chat.",
     category: "Tiện ích",
     usage: "id | id [số điện thoại] | id box | id @user (có thể tag nhiều)",
-    cooldowns: 5,
+    cooldowns: 2,
     dependencies: {}
 };
 

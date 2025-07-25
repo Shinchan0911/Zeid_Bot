@@ -12,7 +12,7 @@ async function handleCommand(messageText, event = null, api = null, threadInfo =
   const type = event?.type;
   const UIDUsage = event?.data?.uidFrom || event?.senderID;
 
-  if (type === "User" && config.allow_private_command === false) {
+  if (type == 1 && config.allow_private_command === false) {
     return;
   }
 
@@ -22,7 +22,10 @@ async function handleCommand(messageText, event = null, api = null, threadInfo =
   const command = global.client.commands.get(commandName);
   if (!command) {
     if (api && threadId) {
-      api.sendMessage("⚠️ Lệnh không tồn tại!", threadId, type);
+      api.sendMessage({
+        msg: "⚠️ Lệnh không tồn tại!",
+        ttl: 20000  // Tự xóa sau 20 giây
+      }, threadId, type);
     }
     return;
   }
@@ -31,10 +34,10 @@ async function handleCommand(messageText, event = null, api = null, threadInfo =
   const isBotAdmin = global.users?.admin?.includes(UIDUsage);
   const isSupport = global.users?.support?.includes(UIDUsage);
   
+  let isGroupAdmin = false;
+
   if (type == 1) {
     if (threadInfo.box_only) {
-      let isGroupAdmin = false;
-
       try {
         const info = await api.getThreadInfo(threadId);
 
@@ -50,20 +53,32 @@ async function handleCommand(messageText, event = null, api = null, threadInfo =
     }
 
     if (threadInfo.admin_only && !isBotAdmin) {
-      return api.sendMessage("❌ Nhóm đã bật chế độ chỉ admin bot đùng được lệnh.", threadId, type);
+      return api.sendMessage({
+        msg: "❌ Nhóm đã bật chế độ chỉ admin bot đùng được lệnh.",
+        ttl: 30000  // Tự xóa sau 30 giây
+      }, threadId, type);
     }
 
     if (threadInfo.support_only && !isSupport && !isBotAdmin) {
-      return api.sendMessage("❌ Nhóm đã bật chế độ chỉ support bot hoặc admin bot đùng được lệnh.", threadId, type);
+      return api.sendMessage({
+        msg: "❌ Nhóm đã bật chế độ chỉ support bot hoặc admin bot đùng được lệnh.",
+        ttl: 30000  // Tự xóa sau 30 giây
+      }, threadId, type);
     }
 
     if (threadInfo.box_only && !isGroupAdmin && !isBotAdmin) {
-      return api.sendMessage("❌ Nhóm đã bật chế độ chỉ trưởng nhóm hoặc phó nhóm đùng được lệnh.", threadId, type);
+      return api.sendMessage({
+        msg: "❌ Nhóm đã bật chế độ chỉ trưởng nhóm hoặc phó nhóm đùng được lệnh.",
+        ttl: 30000  // Tự xóa sau 30 giây
+      }, threadId, type);
     }
   }
 
   if ((role === 2 && !isBotAdmin) || (role === 1 && !isBotAdmin && !isSupport)) {
-    return api.sendMessage("🚫 Bạn không có quyền sử dụng lệnh này.", threadId, type);
+    return api.sendMessage({
+      msg: "🚫 Bạn không có quyền sử dụng lệnh này.",
+      ttl: 30000  // Tự xóa sau 30 giây
+    }, threadId, type);
   }
 
   const cdTime = (command.config.cooldowns || 0) * 1000;
@@ -77,7 +92,10 @@ async function handleCommand(messageText, event = null, api = null, threadInfo =
 
   if (lastUsed && Date.now() - lastUsed < cdTime) {
     const timeLeft = ((cdTime - (Date.now() - lastUsed)) / 1000).toFixed(1);
-    return api.sendMessage(`⏳ Vui lòng chờ ${timeLeft}s để dùng lại lệnh '${commandName}'`, threadId, type);
+    return api.sendMessage({
+      msg: `⏳ Vui lòng chờ ${timeLeft}s để dùng lại lệnh '${commandName}'`,
+      ttl: 15000  // Tự xóa sau 15 giây (cooldown message)
+    }, threadId, type);
   }
 
   cdMap.set(threadId, Date.now());
@@ -86,7 +104,10 @@ async function handleCommand(messageText, event = null, api = null, threadInfo =
     command.run({ args, event, api, Users, Threads });
   } catch (err) {
     logger.log("❌ Lỗi khi xử lý lệnh: " + err.message, "error");
-    return api.sendMessage("❌ Đã xảy ra lỗi khi xử lý lệnh!", threadId, type);
+    return api.sendMessage({
+      msg: "❌ Đã xảy ra lỗi khi xử lý lệnh!",
+      ttl: 30000  // Tự xóa sau 30 giây
+    }, threadId, type);
   }
 }
 
