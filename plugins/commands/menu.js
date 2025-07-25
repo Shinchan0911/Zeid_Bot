@@ -38,7 +38,7 @@ function sortByLengthDesc(arr, key) {
     return arr.sort((a, b) => b[key].length - a[key].length);
 }
 
-module.exports.run = async function({ api, event, args }) {
+module.exports.run = async function({ api, event, args, Threads }) {
     const { threadId, type, data } = event;
     const senderId = data.uidFrom;
     const cmds = global.client.commands;
@@ -105,10 +105,9 @@ module.exports.run = async function({ api, event, args }) {
         ) return;
         msg += `[ ${cmd.cmdCategory ? cmd.cmdCategory.toUpperCase() : "KHÁC"} ]\n📝 Tổng lệnh: ${cmd.nameModule.length} lệnh\n${cmd.nameModule.join(", ")}\n\n`;
     });
-    // Show current prefix (system and group)
-    //const { getGroupPrefix } = require("../../modules/commands/setprefix");
-    //const currentPrefix = getGroupPrefix(threadId);
-    const currentPrefix = global.config.prefix;
+    const threadData = await Threads.getData(event.threadId);
+    const threadInfo = threadData?.data || {};
+    const currentPrefix = threadInfo.prefix ? threadInfo.prefix : global.config.prefix;
     msg += `📝 Tổng số lệnh: ${cmds.size} lệnh\n👤 Tổng số admin bot: ${admin.length}\n👾 Tên Bot: ${NameBot}\n⏰ Hôm nay là: ${getDayVN()}\n⏱️ Thời gian: ${moment.tz("Asia/Ho_Chi_Minh").format("HH:mm:ss | DD/MM/YYYY")}\n${currentPrefix}help + tên lệnh để xem chi tiết\n${currentPrefix}help + all để xem tất cả lệnh`;
     return api.sendMessage(msg, threadId, type);
 }
