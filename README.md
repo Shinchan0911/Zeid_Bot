@@ -2,8 +2,6 @@
 
 **Zeid Bot** là một chatbot Zalo được phát triển bằng Node.js, dựa trên thư viện [ZCA-JS](https://github.com/RFS-ADRENO/zca-js)
 
-> Nơi lưu trữ Plugins: [https://github.com/Shinchan0911/Zeid-Bot-Plugins](https://github.com/Shinchan0911/Zeid-Bot-Plugins)
-
 > Nhóm Zalo giao lưu, hỗ trợ: [https://zalo.me/g/xwxdtp685](https://zalo.me/g/xwxdtp685)
 
 > [!IMPORTANT]
