@@ -28,7 +28,7 @@ const diceURLs = {
 };
 
 async function ensureDiceImagesExist() {
-  if (!fs.existsSync(diceDir)) fs.mkdirSync(diceDir);
+  if (!fs.existsSync(diceDir)) fs.mkdirSync(diceDir, { recursive: true });
   for (let i = 1; i <= 6; i++) {
     const filePath = path.join(diceDir, `dice_${i}.jpg`);
     if (!fs.existsSync(filePath)) {
