@@ -6,7 +6,7 @@ module.exports.config = {
   role: 2, 
   author: "NLam182",
   description: "Thêm người dùng vào nhóm bằng User ID hoặc số điện thoại.",
-  category: "Quản lý nhóm",
+  category: "Nhóm",
   usage: "adduser <userId_hoac_sdt>",
   cooldowns: 2,
   dependencies: {}

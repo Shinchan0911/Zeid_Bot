@@ -3,6 +3,9 @@ const path = require("path");
 const { execSync } = require("child_process");
 const logger = require("../../utils/logger");
 
+const Users = require("../controller/controllerUsers");
+const Threads = require("../controller/controllerThreads");
+
 function extractDependencies(filePath) {
   try {
     const content = fs.readFileSync(filePath, "utf8");
@@ -68,7 +71,7 @@ function loadEvents(dir = path.join(__dirname, "../..", "plugins", "events")) {
 
     if (typeof event.onLoad === "function") {
       try {
-        event.onLoad({ api: global.api });
+        event.onLoad({ api: global.api, Users, Threads });
       } catch (e) {
         logger.log(`Lỗi trong onLoad của event ${eventName}: ${e.message}`, "error");
       }

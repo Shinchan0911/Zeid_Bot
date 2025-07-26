@@ -3,6 +3,8 @@ const logger = require("../../utils/logger");
 const Users = require("../controller/controllerUsers");
 const Threads = require("../controller/controllerThreads");
 
+const { ThreadType } = require("zca-js");
+
 async function handleCommand(messageText, event = null, api = null, threadInfo = null, prefix = null) {
   const config = global.config;
 
@@ -12,7 +14,7 @@ async function handleCommand(messageText, event = null, api = null, threadInfo =
   const type = event?.type;
   const UIDUsage = event?.data?.uidFrom || event?.senderID;
 
-  if (type == 1 && config.allow_private_command === false) {
+  if (type == ThreadType.User && config.allow_private_command === false) {
     return;
   }
 

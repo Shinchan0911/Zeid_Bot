@@ -36,7 +36,7 @@ module.exports.handleEvent = async ({ api, event, eventType, Users, Threads }) =
   console.log("đã có event xảy ra");
 }
 
-module.exports.onLoad =  async function({ api }) {
+module.exports.onLoad =  async function({ api, Users, Threads }) {
   console.log("Sự kiện example đã được load");
 }
 
@@ -66,7 +66,7 @@ module.exports.config = {
   dependencies: {} // Các thư viện cần thiết (Bot sẽ tự cài khi load lệnh)
 };
 
-module.exports.onLoad = async ({ api }) => {
+module.exports.onLoad = async ({ api, Users, Threads }) => {
   console.log("Lệnh example đã được load")
 }
 
@@ -126,12 +126,13 @@ reloadConfig();
 
 ```js
 await Thread.getData("id_box"); // Lấy dữ liệu
-await Thread.saveData("id_box", data_json); // Lưu dữ liệu
+await Thread.setData("id_box", data_json); // Lưu dữ liệu
+await Thread.getAll(); // Lấy tất cả dữ liệu
 
 // Ví dụ
 const databox = (await Thread.getData("id_box")).data;
 databox.prefix = "!";
-await Thread.saveData("id_box", databox);
+await Thread.setData("id_box", databox);
 ```
 </details>
 
@@ -140,12 +141,13 @@ await Thread.saveData("id_box", databox);
 
 ```js
 await Users.getData("user_id"); // Lấy dữ liệu
-await Users.saveData("user_id", data_json); // Lưu dữ liệu
+await Users.setData("user_id", data_json); // Lưu dữ liệu
+await Users.getAll(); // Lấy tất cả dữ liệu
 
 // Ví dụ
 const datauser = (await Users.getData("user_id")).data;
 datauser.money = 1000;
-await Users.saveData("user_id", datauser);
+await Users.setData("user_id", datauser);
 ```
 </details>
 

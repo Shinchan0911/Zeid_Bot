@@ -22,6 +22,8 @@ global.users = {
 
 global.config = new Object();
 
+global.api = null;
+
 (async () => {
 
 try {
@@ -58,6 +60,8 @@ schedule.scheduleJob("0 * * * * *", () => {
 });
 
 const api = await login();
+
+global.api = api;
 
 logger.log("Đã đăng nhập thành công", "info");
 

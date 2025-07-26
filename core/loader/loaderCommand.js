@@ -3,6 +3,9 @@ const path = require("path");
 const { execSync } = require("child_process");
 const logger = require("../../utils/logger");
 
+const Users = require("../controller/controllerUsers");
+const Threads = require("../controller/controllerThreads");
+
 function extractDependencies(filePath) {
   try {
     const content = fs.readFileSync(filePath, "utf8");
@@ -63,7 +66,7 @@ function loadCommands(dir = path.join(__dirname, "../..", "plugins", "commands")
 
     if (typeof command.onLoad === "function") {
       try {
-        command.onLoad({ api });
+        command.onLoad({ api: global.api, Users, Threads });
       } catch (e) {
         logger.log(`Lỗi trong onLoad của command ${name}: ${e.message}`, "error");
       }
