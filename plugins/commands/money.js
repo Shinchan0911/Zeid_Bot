@@ -1,6 +1,6 @@
 module.exports.config = {
   name: 'money',
-  version: '1.0.0',
+  version: '1.0.1',
   role: 0,
   author: 'ShinTHL09',
   description: 'Kiểm tra số tiền của bản thân hoặc người được tag',
