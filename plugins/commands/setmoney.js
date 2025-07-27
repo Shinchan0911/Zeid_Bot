@@ -1,11 +1,11 @@
 module.exports.config = {
   name: 'setmoney',
-  version: '1.0.0',
+  version: '1.0.1',
   role: 2,
   author: 'ShinTHL09',
   description: 'Thêm hoặc đặt số tiền của bản thân hoặc người khác',
   category: 'Tiện ích',
-  usage: 'setmoney [set/add] [@tag] [số tiền]',
+  usage: 'setmoney [set/add/take] [@tag] [số tiền]',
   cooldowns: 2,
   dependencies: {}
 };
@@ -14,18 +14,35 @@ module.exports.run = async ({ args, event, api, Users }) => {
   const { threadId, type, data } = event;
 
   const subcommand = (args[0] || '').toLowerCase();
-  const mention = data.mentions && Object.keys(data.mentions).length > 0;
+  const mentions = data.mentions;
+  const hasMention = mentions && mentions.length > 0;
   const senderID = data.uidFrom;
 
-  const targetID = mention ? Object.keys(data.mentions)[0] : senderID;
-  const targetName = mention ? Object.values(data.mentions)[0] : "Bạn";
+  const targetID = hasMention ? mentions[0].uid : senderID;
+  let targetName = "Bạn";
+
+  if (hasMention) {
+    try {
+      const info = await api.getUserInfo(targetID);
+      targetName = info?.changed_profiles?.[targetID]?.displayName || "Người được tag";
+    } catch (err) {
+      targetName = "Người được tag";
+    }
+  }
 
   try {
-    const userData = await Users.getData(targetID).data;
+    const userDataResult = await Users.getData(targetID);
+    const userData = userDataResult.data;
 
     switch (subcommand) {
       case 'set': {
-        const amountArg = mention ? args[2] : args[1];
+        let amountArg = null;
+        for (let i = args.length - 1; i >= 1; i--) {
+          if (!isNaN(args[i]) && args[i] !== '') {
+            amountArg = args[i];
+            break;
+          }
+        }
         if (!amountArg || isNaN(amountArg)) {
           return api.sendMessage("❌ Dùng: setmoney set [@tag] [số tiền]", threadId, type);
         }
@@ -39,7 +56,14 @@ module.exports.run = async ({ args, event, api, Users }) => {
       }
 
       case 'add': {
-        const amountArg = mention ? args[2] : args[1];
+
+        let amountArg = null;
+        for (let i = args.length - 1; i >= 1; i--) {
+          if (!isNaN(args[i]) && args[i] !== '') {
+            amountArg = args[i];
+            break;
+          }
+        }
         if (!amountArg || isNaN(amountArg)) {
           return api.sendMessage("❌ Dùng: setmoney add [@tag] [số tiền]", threadId, type);
         }
@@ -54,7 +78,14 @@ module.exports.run = async ({ args, event, api, Users }) => {
       }
 
       case 'take': {
-        const amountArg = mention ? args[2] : args[1];
+
+        let amountArg = null;
+        for (let i = args.length - 1; i >= 1; i--) {
+          if (!isNaN(args[i]) && args[i] !== '') {
+            amountArg = args[i];
+            break;
+          }
+        }
         if (!amountArg || isNaN(amountArg)) {
           return api.sendMessage("❌ Dùng: setmoney take [@tag] [số tiền]", threadId, type);
         }
@@ -69,7 +100,7 @@ module.exports.run = async ({ args, event, api, Users }) => {
       }
 
       default:
-        return api.sendMessage("❌ Lệnh không hợp lệ. Dùng: setmoney set/add [@tag] [số tiền]", threadId, type);
+        return api.sendMessage("❌ Lệnh không hợp lệ. Dùng: setmoney set/add/take [@tag] [số tiền]", threadId, type);
     }
   } catch (err) {
     console.error(err);
