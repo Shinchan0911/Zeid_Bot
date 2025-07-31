@@ -57,7 +57,7 @@ const setting = [
     ]
   },
   {
-    timer: '07:00:00 PM',
+    timer: '07:16:00 PM',
     message: [
       'Tối rồi, nghỉ ngơi đi mọi người 🥱',
       'Tối nay có ai rảnh đi chơi hông nè? 😜',
@@ -97,7 +97,7 @@ const form = `➢𝐍𝐨𝐭𝐢𝐟𝐢𝐜𝐚𝐭𝐢𝐨𝐧🏆
 [ 𝗡𝗢̣̂𝗜 𝗗𝗨𝗡𝗚 ]  %content`;
 
 module.exports.onLoad = async function ({ api, Threads }) {
-  const path = __dirname + '/cache/';
+  const path = __dirname + '/temp/';
 
   if (!fs.existsSync(path)) fs.mkdirSync(path, { recursive: true });
 
@@ -142,18 +142,21 @@ module.exports.onLoad = async function ({ api, Threads }) {
       console.error("Lỗi tải hoặc lưu ảnh:", err.message);
     }
 
-    const allGroups = await Threads.getAll();
 
-    for (const Group of allGroups) {
-      if (Group.data.auto_send) {
+    const allGroups = await api.getAllGroups();
+    const allBoxIDs = Object.keys(allGroups.gridVerMap);
+
+    for (const Group of allBoxIDs) {
+      const Thread = await Threads.getData(Group);
+      if (Thread.data.auto_send) {
         try {
           await api.sendMessage({
             msg: msg,
             attachments: filePath,
             ttl: 300000
-          }, Group.threadId, ThreadType.Group);
+          }, Thread.threadId, ThreadType.Group);
         } catch (err) {
-          console.log(`Không gửi được tới threadId ${Group.threadId}`);
+          console.log(`Không gửi được tới threadId ${Thread.threadId}`);
           continue;
         }
       }

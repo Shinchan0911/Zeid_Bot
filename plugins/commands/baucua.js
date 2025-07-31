@@ -37,7 +37,14 @@ const taxRate = 0.1;
 
 async function downloadImage(url, dest) {
   if (fs.existsSync(dest)) return;
-  const response = await axios.get(url, { responseType: "arraybuffer" });
+  const response = await axios.get(url, { 
+    responseType: "arraybuffer",
+    headers: {
+            'User-Agent': 'Mozilla/5.0',
+            'Referer': 'https://imgur.com/',
+            'Accept': 'image/*,*/*;q=0.8'
+          }
+   });
   fs.writeFileSync(dest, response.data);
 }
 
@@ -85,7 +92,7 @@ module.exports.run = async function ({ args, event, api, Users }) {
   const emojiResult = result.map(a => emojiMap[a]).join(" | ");
 
   const gifPath = path.join(cacheDir, "gif.gif");
-  api.sendMessage({ msg: "🎲 Đang lắc bầu cua...", attachments: gifPath, ttl: 3000 }, threadId, type);
+  await api.sendMessage({ msg: "🎲 Đang lắc bầu cua...", attachments: gifPath, ttl: 3000 }, threadId, type);
 
   setTimeout(async () => {
     const images = await Promise.all(result.map(a => Jimp.read(path.join(cacheDir, `${a}.jpg`))));
@@ -123,5 +130,5 @@ module.exports.run = async function ({ args, event, api, Users }) {
     msg += `\n📦 Số dư mới: ${finalMoney.toLocaleString()}đ`;
 
     api.sendMessage({ msg, attachments: resultPath }, threadId, type);
-  }, 3000);
+  }, 5000);
 };

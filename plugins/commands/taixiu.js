@@ -10,7 +10,7 @@ module.exports.config = {
   author: "ShinTHL09",
   description: "Game tài xỉu có cược tiền hoặc allin",
   category: "game",
-  usage: "taixiu cuoc <tai/xiu> <số tiền/allin>",
+  usage: "taixiu <tai/xiu> <số tiền/allin>",
   cooldowns: 2,
   dependencies: {
     "jimp": "0.16.1"
@@ -35,10 +35,10 @@ async function ensureDiceImagesExist() {
       const res = await axios.get(diceURLs[i], {
         responseType: "arraybuffer",
         headers: {
-          'User-Agent': 'Mozilla/5.0',
-          'Referer': 'https://imgur.com/',
-          'Accept': 'image/*,*/*;q=0.8'
-        }
+            'User-Agent': 'Mozilla/5.0',
+            'Referer': 'https://imgur.com/',
+            'Accept': 'image/*,*/*;q=0.8'
+          }
       });
       fs.writeFileSync(filePath, res.data);
     }
@@ -52,14 +52,11 @@ module.exports.run = async ({ args, event, api, Users }) => {
 
   await ensureDiceImagesExist();
 
-  if (args[0] !== "cuoc")
-    return send("📌 Dùng: taixiu cuoc <tai/xiu> <số tiền/allin>");
-
-  const choice = args[1]?.toLowerCase();
+  const choice = args[0]?.toLowerCase();
   if (!["tai", "xiu"].includes(choice))
     return send("⚠️ Bạn cần chọn `tai` hoặc `xiu`");
 
-  const betInput = args[2];
+  const betInput = args[1];
   if (!betInput) return send("⚠️ Bạn chưa nhập số tiền cược!");
   const userData = (await Users.getData(uid)).data;
   const money = userData.money;
@@ -73,7 +70,7 @@ module.exports.run = async ({ args, event, api, Users }) => {
     if (isNaN(betAmount) || betAmount <= 0)
       return send("❌ Số tiền cược không hợp lệ!");
     if (betAmount < 1000)
-      return send("❌ Số tiền cược tối thiểu là 1000!")
+      return send("❌ Số tiền cược tối thiểu là 1000!");
     if (betAmount > money)
       return send(`❌ Bạn chỉ có ${money} xu!`);
   }
@@ -86,7 +83,7 @@ module.exports.run = async ({ args, event, api, Users }) => {
   const total = dice.reduce((a, b) => a + b, 0);
   const result = total >= 11 ? "tai" : "xiu";
 
-  api.sendMessage({ msg: "🎲 Đang lắc xúc xắc...", ttl: 3000 }, threadId, type);
+  await api.sendMessage({ msg: "🎲 Đang lắc xúc xắc...", ttl: 3000 }, threadId, type);
   setTimeout(async () => {
     const diceImages = await Promise.all(
       dice.map(num => Jimp.read(path.join(diceDir, `dice_${num}.jpg`)))
@@ -127,5 +124,5 @@ module.exports.run = async ({ args, event, api, Users }) => {
     }
 
     api.sendMessage({ msg: message, attachments: finalImagePath }, threadId, type);
-  }, 3000);
+  }, 5000);
 };
