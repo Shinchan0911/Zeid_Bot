@@ -1,7 +1,12 @@
 const fs = require("fs");
+const fsPromises = require('fs').promises;
 const path = require("path");
 const logger = require("./logger");
 const YAML = require("yaml");
+const axios = require('axios');
+const getVideoInfo = require('get-video-info');
+const ffmpeg = require('fluent-ffmpeg');
+const ffmpegStatic = require('ffmpeg-static');
 
 function saveBase64Image(base64String, outputPath) {
     const matches = base64String.match(/^data:(image\/\w+);base64,(.+)$/);
@@ -181,6 +186,76 @@ function updateMessageCache(data) {
     }
 }
 
+// PROCCES VIDEO
+ffmpeg.setFfmpegPath(ffmpegStatic);
+
+function convertDurationToFiveDigits(durationStr) {
+  const duration = parseFloat(durationStr);
+  const [sec, millisRaw] = duration.toFixed(3).split('.');
+  return `${parseInt(sec)}${millisRaw}`;
+}
+
+async function uploadFile(videoPath, ID, Type) {
+    const result = await global.api.uploadAttachment(
+        videoPath,
+        ID,
+        Type
+    );
+    return result;
+}
+
+async function extractThumbnail(videoPath, thumbnailPath) {
+  return new Promise((resolve, reject) => {
+    ffmpeg(videoPath)
+      .on('end', () => {
+        resolve(thumbnailPath);
+      })
+      .on('error', (err) => {
+        console.error('Error generating thumbnail:', err.message);
+        reject(err);
+      })
+      .screenshots({
+        count: 1,
+        folder: path.dirname(thumbnailPath),
+        filename: path.basename(thumbnailPath),
+        timemarks: ['0']
+      });
+  });
+}
+
+async function processVideo(videoPath, threadId, type) {
+  try {
+    const videoInfo = await getVideoInfo(videoPath);
+    const videoStream = videoInfo.streams.find((s) => s.codec_type === 'video');
+
+    const metadata = {
+      duration: convertDurationToFiveDigits(videoInfo.format.duration),
+      width: videoStream.width,
+      height: videoStream.height,
+    };
+
+    const folderPath = path.dirname(videoPath);
+    const thumbnailPath = path.join(folderPath, 'thumb.jpg');
+
+    await extractThumbnail(videoPath, thumbnailPath);
+
+    const videoUrl = (await uploadFile(videoPath, threadId, type))[0].fileUrl;
+    const thumbnailUrl = (await uploadFile(thumbnailPath, threadId, type))[0].normalUrl;
+
+    fs.unlinkSync(thumbnailPath);
+
+    return {
+      status: true,
+      videoUrl,
+      metadata,
+      thumbnailUrl,
+    };
+  } catch (error) {
+    console.error('Error processing video:', error.message);
+    throw error;
+  }
+}
+
 module.exports = {
     updateConfigArray,
     updateConfigValue,
@@ -191,5 +266,6 @@ module.exports = {
     getMessageCache,
     getMessageCacheByMsgId,
     cleanOldMessages,
-    convertTimestamp
+    convertTimestamp,
+    processVideo
 };
