@@ -9,7 +9,7 @@ module.exports.config = {
   author: 'ShinTHL09',
   description: 'Xem video gái ngẫu nhiên',
   category: 'Tiện ích',
-  usage: 'girl',
+  usage: 'vdgirl',
   cooldowns: 2
 };
 
