@@ -2,10 +2,11 @@ const { convertTimestamp, getMessageCache } = require("../../utils/index");
 const fs = require("fs").promises;
 const path = require("path");
 const axios = require("axios");
+const { ThreadType } = require("zca-js");
 
 module.exports.config = {
   name: "anti",
-  version: "1.1.1",
+  version: "1.1.7",
   role: 1,
   author: "ShinTHL09",
   description: "Bật/tắt các chế độ Anti của nhóm",
@@ -41,6 +42,18 @@ async function handlePhoto(messageCache, tempPath, name, timeSend, timeUndo, thr
   return tempFilePath;
 }
 
+async function isAdmin(api, userId, threadId) {
+  const info = await api.getGroupInfo(threadId);
+  const groupInfo = info.gridInfoMap[threadId];
+
+  const isCreator = groupInfo.creatorId === userId;
+  const isDeputy = Array.isArray(groupInfo.adminIds) && groupInfo.adminIds.includes(userId);
+  isGroupAdmin = isCreator || isDeputy;
+
+  return isGroupAdmin;
+}
+
+
 module.exports.handleEvent = async function ({ event, api, Threads, eventType }) {
   const { threadId, isGroup, data, type } = event;
   const typeUndo = isGroup ? 1 : 0;
@@ -54,7 +67,8 @@ module.exports.handleEvent = async function ({ event, api, Threads, eventType })
   try {
     // === Anti Link ===
     if (threadData.anti_link) {
-      if (data.msgType === "chat.recommended" && data.content.action === "recommened.link") {
+      if ((data.msgType == "chat.recommended" && data.content.action == "recommened.link") || (data.msgType == "webchat" && String(data.content).match(/https?:\/\/[^\s]+/))) {
+        if (isAdmin(api, userId, threadId)) return;
         await api.deleteMessage({
           threadId,
           type,
@@ -68,7 +82,8 @@ module.exports.handleEvent = async function ({ event, api, Threads, eventType })
         const msg = `🚫 @${name}, không được gửi link trong nhóm này!`;
         return api.sendMessage({
           msg,
-          mentions: [{ pos: 3, uid: userId, len: name.length + 1 }]
+          mentions: [{ pos: 3, uid: userId, len: name.length + 1 }],
+          ttl: 15000
         }, threadId, type);
       }
     }
@@ -84,6 +99,8 @@ module.exports.handleEvent = async function ({ event, api, Threads, eventType })
     if (threadData.anti_spam) {
       if (!spamCache[threadId]) spamCache[threadId] = {};
       if (!spamCache[threadId][userId]) spamCache[threadId][userId] = [];
+
+      if (isAdmin(api, userId, threadId)) return;
 
       spamCache[threadId][userId].push(now);
       spamCache[threadId][userId] = spamCache[threadId][userId].filter(ts => now - ts <= SPAM_TIME);
@@ -102,7 +119,8 @@ module.exports.handleEvent = async function ({ event, api, Threads, eventType })
         const msg = `🚫 @${name}, vui lòng không spam!`;
         return api.sendMessage({
           msg,
-          mentions: [{ pos: 3, uid: userId, len: name.length + 1 }]
+          mentions: [{ pos: 3, uid: userId, len: name.length + 1 }],
+          ttl: 15000
         }, threadId, type);
       }
     }
@@ -221,6 +239,10 @@ module.exports.handleEvent = async function ({ event, api, Threads, eventType })
 module.exports.run = async function ({ api, event, args, Threads }) {
   const { threadId, type } = event;
   const action = (args[0] || "").toLowerCase();
+
+  if (type !== ThreadType.Group) {
+      return api.sendMessage("Lệnh này chỉ có thể được sử dụng trong nhóm chat.", threadId, type);
+  }
 
   const keyMap = {
     link: "anti_link",
