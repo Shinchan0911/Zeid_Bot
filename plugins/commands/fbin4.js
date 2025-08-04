@@ -4,7 +4,7 @@ const path = require('path');
 
 module.exports.config = {
     name: 'fbin4',
-    version: '1.0.0',
+    version: '1.0.1',
     role: 0,
     author: 'ShinTHL09',
     description: 'Lấy thông tin Facebook bằng link hoặc UID',
@@ -89,32 +89,26 @@ async function sendInfoMessage(api, threadId, type, data) {
     }
 }
 
-module.exports.handleEvent = async function({ event, api }) {
+module.exports.run = async ({ args, event, api }) => {
     const { threadId, type, data } = event;
+    const fbId = args[0] || data.content.href;
     if (data?.msgType === 'chat.recommended' && data?.content?.action === 'recommened.link') {
-        if (data.content.title?.toLowerCase().includes('fbin4')) {
-            if (!accessToken) {
-                return api.sendMessage('Vui lòng thêm token vào file `fbin4.js`.', threadId, type);
-            }
+        if (!accessToken) {
+            return api.sendMessage('Vui lòng thêm token vào file `fbin4.js`.', threadId, type);
+        }
 
-            try {
-                const uid = (await axios.get("https://api.zeidteam.xyz/facebook/getuid?link=" + data.content.href)).data.uid;
-                const fbData = await getFacebookInfo(uid);
-                if (fbData.error) {
-                    return api.sendMessage("Không tìm thấy thông tin.", threadId, type);
-                }
-                await sendInfoMessage(api, threadId, type, fbData);
-            } catch (err) {
-                console.error(err);
-                api.sendMessage("Lỗi xảy ra khi lấy thông tin.", threadId, type);
+        try {
+            const uid = (await axios.get("https://api.zeidteam.xyz/facebook/getuid?link=" + fbId)).data.uid;
+            const fbData = await getFacebookInfo(uid);
+            if (fbData.error) {
+                return api.sendMessage("Không tìm thấy thông tin.", threadId, type);
             }
+            await sendInfoMessage(api, threadId, type, fbData);
+        } catch (err) {
+            console.error(err);
+            api.sendMessage("Lỗi xảy ra khi lấy thông tin.", threadId, type);
         }
     }
-};
-
-module.exports.run = async ({ args, event, api }) => {
-    const { threadId, type } = event;
-    const fbId = args[0];
 
     if (!fbId) {
         return api.sendMessage('Vui lòng nhập UID hoặc link Facebook.', threadId, type);
