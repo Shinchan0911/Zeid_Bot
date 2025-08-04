@@ -3,7 +3,6 @@ const fsPromises = require('fs').promises;
 const path = require("path");
 const logger = require("./logger");
 const YAML = require("yaml");
-const axios = require('axios');
 const getVideoInfo = require('get-video-info');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegStatic = require('ffmpeg-static');
@@ -132,6 +131,7 @@ function cleanOldMessages() {
             delete messageCache[key];
         }
     });
+    writeMessageJson(messageCache);
 }
 
 function readMessageJson() {
@@ -243,6 +243,7 @@ async function processVideo(videoPath, threadId, type) {
     const thumbnailUrl = (await uploadFile(thumbnailPath, threadId, type))[0].normalUrl;
 
     fs.unlinkSync(thumbnailPath);
+    fs.unlinkSync(videoPath);
 
     return {
       status: true,
@@ -256,6 +257,33 @@ async function processVideo(videoPath, threadId, type) {
   }
 }
 
+// PROCESS AUDIO
+async function processAudio(audioPath, threadId, type) {
+    const outputPath = audioPath.replace(/\.mp3$/, '.aac');
+    await convertMp3ToAac(audioPath, outputPath)
+    const audioUrl = (await uploadFile(outputPath, threadId, type))[0].fileUrl + ".aac";
+
+    fs.unlinkSync(audioPath);
+    fs.unlinkSync(outputPath);
+
+    return audioUrl;
+}
+    
+
+function convertMp3ToAac(inputPath, outputPath) {
+  return new Promise((resolve, reject) => {
+    ffmpeg(inputPath)
+      .output(outputPath)
+      .audioCodec('aac')
+      .on('end', () => {
+        resolve(outputPath);
+      })
+      .on('error', (err) => {
+        reject(err);
+      })
+      .run();
+  });
+}
 module.exports = {
     updateConfigArray,
     updateConfigValue,
@@ -267,5 +295,6 @@ module.exports = {
     getMessageCacheByMsgId,
     cleanOldMessages,
     convertTimestamp,
-    processVideo
+    processVideo,
+    processAudio
 };
