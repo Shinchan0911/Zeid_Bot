@@ -1,10 +1,11 @@
 const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
+const { processVideo } = require("../../utils/index");
 
 module.exports.config = {
   name: 'vdgirl',
-  version: '1.0.0',
+  version: '1.0.1',
   role: 0,
   author: 'ShinTHL09',
   description: 'Xem video gái ngẫu nhiên',
@@ -15,7 +16,6 @@ module.exports.config = {
 
 module.exports.run = async ({ args, event, api, Users }) => {
   const { threadId, type } = event;
-  const { processVideo } = require("../../utils/index");
 
   const tempDir = path.join(__dirname, 'temp');
   const filePath = path.join(tempDir, 'gai.mp4');
@@ -39,7 +39,7 @@ module.exports.run = async ({ args, event, api, Users }) => {
     const videoData = await processVideo(filePath, threadId, type);
 
     await api.sendVideo({
-      videoUrl: link.data.data,
+      videoUrl: videoData.videoUrl,
       thumbnailUrl: videoData.thumbnailUrl,
       duration: videoData.metadata.duration,
       width: videoData.metadata.width,
@@ -49,11 +49,5 @@ module.exports.run = async ({ args, event, api, Users }) => {
   } catch (err) {
     console.error("Lỗi xử lý video:", err.message);
     await api.sendMessage("❌ Không thể tải video.", threadId, type);
-  } finally {
-    try {
-      if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
-    } catch (err) {
-      console.error("Không thể xoá file tạm:", err.message);
-    }
   }
 };
