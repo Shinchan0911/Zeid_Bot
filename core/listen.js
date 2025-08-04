@@ -24,7 +24,7 @@ function startListening(api) {
     handleEvent("message", event, api);
 
     const { data } = event;
-    const content = data?.content;
+    const content = data?.content?.title ?? data?.content;
 
     if (typeof content === "string" && content.startsWith(prefix)) {
       handleCommand(content, event, api, threadInfo, prefix);
