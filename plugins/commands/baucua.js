@@ -5,13 +5,13 @@ const Jimp = require("jimp");
 
 module.exports.config = {
   name: "baucua",
-  version: "1.0.0",
+  version: "1.0.3",
   role: 0,
   author: "ShinTHL09",
   description: "Game bầu cua đa cược",
   category: "game",
   usage: "baucua <bau/cua/ca/nai/ga/tom>:<số tiền/allin>",
-  cooldowns: 2,
+  cooldowns: 10,
   dependencies: { 
     "jimp": "0.16.1"
  }
