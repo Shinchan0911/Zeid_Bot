@@ -5,13 +5,13 @@ const Jimp = require("jimp");
 
 module.exports.config = {
   name: "taixiu",
-  version: "1.0.2",
+  version: "1.0.3",
   role: 0,
   author: "ShinTHL09",
   description: "Game tài xỉu có cược tiền hoặc allin",
   category: "game",
   usage: "taixiu <tai/xiu> <số tiền/allin>",
-  cooldowns: 2,
+  cooldowns: 10,
   dependencies: {
     "jimp": "0.16.1"
   }
