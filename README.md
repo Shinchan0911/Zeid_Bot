@@ -118,6 +118,18 @@ reloadConfig();
 ```
 </details>
 
+<details>
+<summary>📁 Các hàm để xử lý media</summary>
+
+```js
+const { processVideo, processAudio } = require("../../utils/index");
+
+processVideo(videoPath, threadId, type); // Xử lý video
+
+processAudio(audioPath, threadId, type); // Xử lý audio
+```
+</details>
+
 
 🗃️ Database (Users & Threads)
 
