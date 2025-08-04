@@ -12,7 +12,7 @@ async function handleCommand(messageText, event = null, api = null, threadInfo =
 
   const threadId = event?.threadId;
   const type = event?.type;
-  const UIDUsage = event?.data?.uidFrom || event?.senderID;
+  const UIDUsage = event?.data?.uidFrom;
 
   if (type == ThreadType.User && config.allow_private_command === false) {
     return;
@@ -41,12 +41,11 @@ async function handleCommand(messageText, event = null, api = null, threadInfo =
   if (type == 1) {
     if (threadInfo.box_only) {
       try {
-        const info = await api.getThreadInfo(threadId);
+        const info = await api.getGroupInfo(threadId);
+        const groupInfo = info.gridInfoMap[threadId];
 
-        console.log(info);
-
-        const isCreator = info.creatorId === event.senderID;
-        const isDeputy = Array.isArray(info.adminIds) && info.adminIds.includes(event.senderID);
+        const isCreator = groupInfo.creatorId == UIDUsage;
+        const isDeputy = Array.isArray(groupInfo.adminIds) && groupInfo.adminIds.includes(UIDUsage);
 
         isGroupAdmin = isCreator || isDeputy;
       } catch (err) {
