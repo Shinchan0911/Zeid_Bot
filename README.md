@@ -20,7 +20,7 @@
 📚 Tải liệu Plugins
 
 <details>
-<summary>📁 Lệnh mẫu</summary>
+<summary>📁 Sự kiện mẫu</summary>
 
 ```javascript
 module.exports.config = {
@@ -32,26 +32,29 @@ module.exports.config = {
     dependencies: {} // Các thư viện cần thiết (Bot sẽ tự cài khi load sự kiện)
 };
 
-module.exports.handleEvent = async ({ api, event, eventType, Users, Threads }) => {
-  console.log("đã có event xảy ra");
-}
-
 module.exports.onLoad =  async function({ api, Users, Threads }) {
   console.log("Sự kiện example đã được load");
 }
 
 // Bot nhại tin nhắn
-module.exports.run = async function({ api, event, eventType, Users, threads }) {
+module.exports.run = async function({ api, event, eventType, Users, Threads, replyData }) {
     const { threaId, type, data } = event;
     const msg = data.content;
     return api.sendMessage(msg, threaId, type);
+};
+
+// Bot nhại tin nhắn có reply
+module.exports.run = async function({ api, event, eventType, Users, Threads, replyData }) {
+    const { threaId, type, data } = event;
+    const msg = data.content;
+    return api.sendMessage({ msg, quote: replyData }, threaId, type);
 };
 ```
 
 </details>
 
 <details>
-<summary>📁 Sự kiện mẫu</summary>
+<summary>📁 Lệnh mẫu mẫu</summary>
 
 ```javascript
 module.exports.config = {
@@ -70,14 +73,39 @@ module.exports.onLoad = async ({ api, Users, Threads }) => {
   console.log("Lệnh example đã được load")
 }
 
+module.exports.handleEvent = async ({ api, event, eventType, Users, Threads, replyData }) => {
+  console.log("đã có event xảy ra");
+}
+
+// lệnh mẫu
 module.exports.run = async ({ args, event, api, Users, Thread }) => {
   const { threadId, type } = event;
 
   return api.sendMessage("Đây là lệnh mẫu", threadId, type);
 
 };
+
+// lệnh mẫu có reply tin nhắn
+module.exports.run = async ({ args, event, api, Users, Thread }) => {
+  const { threadId, type } = event;
+
+  return api.sendMessage({ msg: "Đây là lệnh mẫu", quote: replyData }, threadId, type);
+
+};
 ```
 
+</details>
+
+<details>
+<summary>📁 Các hàm để xử lí media</summary>
+
+```js
+const { processVideo, processAudio } = require("../../utils/index");
+
+processVideo(videoPath, threadId, type); // Xử lí video
+processAudio(audioPath, threadId, type); // Xử lí audio
+
+```
 </details>
 
 
@@ -89,10 +117,10 @@ global.client.config // Config bot
 global.client.config.prefix // Prefix hiện tại
 
 global.client.commands // Tất cả command
-global.client.commands.get("example").config.author
+global.client.commands.get("example").config.author // lấy author của lệnh example
 
 global.client.events // Tất cả event
-global.client.events.get("example").config.author
+global.client.events.get("example").config.author // lấy author của lệnh example
 
 global.users.admin[0] // ID admin đầu tiên
 global.users.support[0] // ID support đầu tiên
@@ -159,6 +187,8 @@ await Users.setData("user_id", datauser);
 
 - **Node.js** phiên bản **v20 trở lên**
 
+- **Khi sử dụng hệ điều hành Windowns bạn cần phải cài các font trong plugins/cache/... để có font chữ cho canvas**
+
 ### 📦 Cài đặt Bot
 
 ```bash
@@ -202,6 +232,9 @@ npm install
    ```bash
    npm start
    ```
+
+📘 Có thể dùng công cụ ZaloDataExtractor để lấy `imei` `userAgent` `cookie`:
+👉 [https://github.com/JustKemForFun/ZaloDataExtractor/](https://github.com/JustKemForFun/ZaloDataExtractor/)
 
 📘 Xem hướng dẫn chi tiết cách lấy cookie tại:  
 👉 [https://tdung.gitbook.io/zca-js/dang-nhap/dang-nhap-voi-cookie](https://tdung.gitbook.io/zca-js/dang-nhap/dang-nhap-voi-cookie)

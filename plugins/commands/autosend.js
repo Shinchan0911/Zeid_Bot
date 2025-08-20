@@ -2,9 +2,11 @@ const fs = require('fs');
 const axios = require('axios');
 const { ThreadType } = require("zca-js");
 
+const autosendgif = require('../../assets/autosend.json');
+
 module.exports.config = {
   name: 'autosend',
-  version: '1.0.0',
+  version: '1.0.1',
   role: 1,
   author: 'ShinTHL09',
   description: 'Tự động gửi tin nhắn theo giờ đã cài và tự xóa sau 5 phút',
@@ -124,9 +126,7 @@ module.exports.onLoad = async function ({ api, Threads }) {
     const filePath = path + fileName;
 
     try {
-      const imageAPI = 'https://api.zeidteam.xyz/gif/phongcanh';
-      const { data: apiRes } = await axios.get(imageAPI);
-      const imageUrl = apiRes.data;
+      const imageUrl = autosendgif[Math.floor(Math.random() * autosendgif.length)];
 
       const res = await axios.get(imageUrl, {
         responseType: "arraybuffer",

@@ -6,6 +6,9 @@ const YAML = require("yaml");
 const getVideoInfo = require('get-video-info');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegStatic = require('ffmpeg-static');
+const QRCode = require("qrcode");
+const jsQR = require("jsqr");
+const Jimp = require("jimp");
 
 function saveBase64Image(base64String, outputPath) {
     const matches = base64String.match(/^data:(image\/\w+);base64,(.+)$/);
@@ -157,11 +160,6 @@ function getMessageCache() {
     return messageCache;
 }
 
-function getMessageCacheByMsgId(msgId) {
-    let messageCache = readMessageJson();
-    return Object.values(messageCache).find((message) => message.msgId === msgId);
-}
-
 function updateMessageCache(data) {
     let messageCache = readMessageJson();
     try {
@@ -246,7 +244,6 @@ async function processVideo(videoPath, threadId, type) {
     fs.unlinkSync(videoPath);
 
     return {
-      status: true,
       videoUrl,
       metadata,
       thumbnailUrl,
@@ -284,17 +281,87 @@ function convertMp3ToAac(inputPath, outputPath) {
       .run();
   });
 }
+
+// QR CODE FUNCTIONS
+async function decodeQRFromBase64(base64Image) {
+    try {
+        const buffer = Buffer.from(base64Image, 'base64');
+        const jimpImage = await Jimp.read(buffer);
+        const imageData = {
+            data: new Uint8ClampedArray(jimpImage.bitmap.data),
+            width: jimpImage.bitmap.width,
+            height: jimpImage.bitmap.height
+        };
+        
+        const code = jsQR(imageData.data, imageData.width, imageData.height);
+        if (code) {
+            return code.data;
+        } else {
+            throw new Error("Không thể đọc QR code");
+        }
+    } catch (error) {
+        throw error;
+    }
+}
+
+function generateQRCodeInTerminal(data, options = {}) {
+    const defaultOptions = {
+        type: 'terminal',
+        small: true,
+        scale: 0.05,
+        margin: 0,
+        width: 1,
+        errorCorrectionLevel: 'L'
+    };
+    
+    const finalOptions = { ...defaultOptions, ...options };
+    
+    return new Promise((resolve, reject) => {
+        QRCode.toString(data, finalOptions, (err, string) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(string);
+            }
+        });
+    });
+}
+
+async function displayQRCodeInConsole(base64Image, fallbackPath = null) {
+    try {
+        const qrData = await decodeQRFromBase64(base64Image);
+        const qrString = await generateQRCodeInTerminal(qrData);
+        console.log(qrString);
+        if (fallbackPath) {
+            try {
+                saveBase64Image(base64Image, fallbackPath);
+                logger.log(`Đã lưu QRCode tại: ${path.basename(fallbackPath)} (mở ảnh để xem nhỏ gọn hơn)`, "info");
+            } catch (e) {
+                logger.log(`Không thể lưu QRCode ra file: ${e.message || e}`, "warn");
+            }
+        }
+        return true;
+    } catch (error) {
+        if (fallbackPath) {
+            logger.log("Lỗi hiển thị QR code trong terminal, đang lưu vào file...", "warn");
+            saveBase64Image(base64Image, fallbackPath);
+            logger.log(`Vui lòng quét mã QRCode ${path.basename(fallbackPath)} để đăng nhập`, "info");
+        }
+        return false;
+    }
+}
 module.exports = {
     updateConfigArray,
     updateConfigValue,
     reloadConfig,
-    saveBase64Image,
     getJsonData,
     updateMessageCache,
     getMessageCache,
-    getMessageCacheByMsgId,
     cleanOldMessages,
     convertTimestamp,
     processVideo,
-    processAudio
+    processAudio,
+    decodeQRFromBase64,
+    generateQRCodeInTerminal,
+    displayQRCodeInConsole
 };

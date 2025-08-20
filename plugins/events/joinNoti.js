@@ -1,9 +1,9 @@
 module.exports.config = {
     event_type: ["group_event"],
     name: "joinNoti",
-    version: "1.0.0",
+    version: "1.0.1",
     author: "NLam182",
-    description: "Chào mừng thành viên mới vào nhóm."
+    description: "Chào mừng thành viên mới vào nhóm và xóa sau 15 giây"
 };
 
 module.exports.run = async function({ api, event }) {
@@ -73,7 +73,7 @@ module.exports.run = async function({ api, event }) {
             msgParts.push(authorTag);
 
             const msg = msgParts.join("");
-            const messagePayload = { msg, mentions };
+            const messagePayload = { msg, mentions, ttl: 15000 };
 
             if (avatarUrls.length > 0) {
                 const downloadPromises = avatarUrls.slice(0, 5).map(async (url, index) => {

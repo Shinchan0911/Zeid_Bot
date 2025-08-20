@@ -6,9 +6,9 @@ const path = require("path");
 module.exports.config = {
     event_type: ["group_event"],
     name: "leaveNoti",
-    version: "1.0.0",
+    version: "1.0.1",
     author: "NLam182",
-    description: "Thông báo khi có thành viên rời hoặc bị xóa khỏi nhóm."
+    description: "Thông báo khi có thành viên rời hoặc bị xóa khỏi nhóm và xóa sau 15 giây"
 };
 
 module.exports.run = async function({ api, event }) {
@@ -60,9 +60,9 @@ module.exports.run = async function({ api, event }) {
             });
 
             const resolvedAttachments = (await Promise.all(downloadPromises)).filter(Boolean);
-            await api.sendMessage({ msg, attachments: resolvedAttachments }, threadId, ThreadType.Group);
+            await api.sendMessage({ msg, attachments: resolvedAttachments, ttl: 15000 }, threadId, ThreadType.Group);
         } else {
-            await api.sendMessage(msg, threadId, ThreadType.Group);
+            await api.sendMessage({msg, ttl: 15000 }, threadId, ThreadType.Group);
         }
 
     } catch (error) {

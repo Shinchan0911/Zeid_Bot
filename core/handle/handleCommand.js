@@ -21,9 +21,18 @@ async function handleCommand(messageText, event = null, api = null, threadInfo =
   const args = messageText.slice(prefix.length).trim().split(/\s+/);
   const commandName = args.shift().toLowerCase();
 
-  const command = global.client.commands.get(commandName);
+  let command = global.client.commands.get(commandName);
   if (!command) {
-    if (api && threadId) {
+    for (const [, cmd] of global.client.commands) {
+      if (Array.isArray(cmd.config.aliases) && cmd.config.aliases.includes(commandName)) {
+        command = cmd;
+        break;
+      }
+    }
+  }
+
+  if (!command) {
+    if (api && threadId && type) {
       api.sendMessage({
         msg: "⚠️ Lệnh không tồn tại!",
         ttl: 20000  // Tự xóa sau 20 giây
@@ -89,7 +98,7 @@ async function handleCommand(messageText, event = null, api = null, threadInfo =
   }
 
   const cdMap = global.client.cooldowns.get(commandName);
-  const lastUsed = cdMap.get(threadId);
+  const lastUsed = cdMap.get(UIDUsage);
 
   if (lastUsed && Date.now() - lastUsed < cdTime) {
     const timeLeft = ((cdTime - (Date.now() - lastUsed)) / 1000).toFixed(1);
@@ -99,10 +108,11 @@ async function handleCommand(messageText, event = null, api = null, threadInfo =
     }, threadId, type);
   }
 
-  cdMap.set(threadId, Date.now());
+  cdMap.set(UIDUsage, Date.now());
 
   try {
-    command.run({ args, event, api, Users, Threads });
+    const replyData = { content: event.data.content, msgType: event.data.msgType, propertyExt: event.data.propertyExt, uidFrom: event.data.uidFrom, msgId: event.data.msgId, cliMsgId: event.data.cliMsgId, ts: event.data.ts, ttl: event.data.ttl }
+    command.run({ args, event, api, Users, Threads, replyData });
   } catch (err) {
     logger.log("❌ Lỗi khi xử lý lệnh: " + err.message, "error");
     return api.sendMessage({

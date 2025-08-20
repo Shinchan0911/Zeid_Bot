@@ -2,13 +2,16 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
+const girlImages = require('../../assets/girl.json');
+
 module.exports.config = {
   name: 'girl',
-  version: '1.0.0',
+  aliases: ['gai'],
+  version: '1.0.3',
   role: 0,
   author: 'ShinTHL09',
   description: 'Xem ảnh gái ngẫu nhiên',
-  category: 'Tiện ích',
+  category: 'Giải trí',
   usage: 'girl',
   cooldowns: 2,
   dependencies: {}
@@ -16,12 +19,17 @@ module.exports.config = {
 
 module.exports.run = async ({ args, event, api, Users }) => {
   const { threadId, type } = event;
+  const tempDir = path.join(__dirname, 'temp');
   const filePath = path.join(__dirname, 'temp', 'gai.jpg');
 
-  try {
-    const link = await axios.get('https://api.zeidteam.xyz/images/gai');
+  if (!fs.existsSync(tempDir)) {
+    fs.mkdirSync(tempDir);
+  }
 
-    const res = await axios.get(link.data.data, {
+  try {
+    const link = girlImages[Math.floor(Math.random() * girlImages.length)];
+
+    const res = await axios.get(link, {
       responseType: "arraybuffer",
       headers: {
         'User-Agent': 'Mozilla/5.0',
@@ -32,7 +40,7 @@ module.exports.run = async ({ args, event, api, Users }) => {
 
     fs.writeFileSync(filePath, res.data);
 
-    await api.sendMessage({ msg: "📷 Ảnh gái ngẫu nhiên", attachments: filePath }, threadId, type);
+    await api.sendMessage({ msg: "📷 Ảnh gái ngẫu nhiên", attachments: filePath, ttl: 60000 }, threadId, type);
 
     fs.unlinkSync(filePath);
   } catch (error) {

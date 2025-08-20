@@ -3,6 +3,7 @@ const stringSimilarity = require('string-similarity');
 
 module.exports.config = {
     name: "menu",
+    aliases: ['help'],
     version: "1.0.0",
     role: 0,
     author: "July",
@@ -109,5 +110,5 @@ module.exports.run = async function({ api, event, args, Threads }) {
     const threadInfo = threadData?.data || {};
     const currentPrefix = threadInfo.prefix ? threadInfo.prefix : global.config.prefix;
     msg += `📝 Tổng số lệnh: ${cmds.size} lệnh\n👤 Tổng số admin bot: ${admin.length}\n👾 Tên Bot: ${NameBot}\n⏰ Hôm nay là: ${getDayVN()}\n⏱️ Thời gian: ${moment.tz("Asia/Ho_Chi_Minh").format("HH:mm:ss | DD/MM/YYYY")}\n${currentPrefix}help + tên lệnh để xem chi tiết\n${currentPrefix}help + all để xem tất cả lệnh`;
-    return api.sendMessage(msg, threadId, type);
+    return api.sendMessage({ msg, ttl: 15000 }, threadId, type);
 }

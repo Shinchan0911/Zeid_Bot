@@ -6,7 +6,7 @@ const { processVideo, processAudio } = require("../../utils/index");
 
 module.exports.config = {
     name: "autodown",
-    version: "2.0.0",
+    version: "2.0.3",
     role: 2,
     author: "ShinTHL09, NLam182", // Phát triển từ Module gốc của pcoder, Kenne400k
     description: "Tự động tải media từ hơn 40 nền tảng phổ biến (Tiktok, Youtube, Facebook, Instagram, Capcut, Reddit, Twitter, Soundcloud, Spotify, Zingmp3, Telegram, Vimeo, Bilibili, Pinterest, v.v...)",
@@ -63,7 +63,7 @@ module.exports.handleEvent = async function ({ api, event }) {
                     type
             });
         } catch {}
-        return api.sendMessage({ msg: "❌ Lỗi khi tải xuống media" }, threadId, type);
+        return api.sendMessage({ msg: "❌ Lỗi khi tải xuống media", ttl: 15000 }, threadId, type);
     }
 
     if (!apiData || !Array.isArray(apiData.medias) || apiData.medias.length === 0) {
@@ -79,7 +79,7 @@ module.exports.handleEvent = async function ({ api, event }) {
                     type
             });
         } catch {}
-        return api.sendMessage({ msg: "❓ Không tìm thấy media để tải xuống" }, threadId, type);
+        return api.sendMessage({ msg: "❓ Không tìm thấy media để tải xuống", ttl: 15000 }, threadId, type);
     }
 
     let videoToSend = null;
@@ -127,6 +127,7 @@ module.exports.handleEvent = async function ({ api, event }) {
                 duration: videoData.metadata.duration,
                 width: videoData.metadata.width,
                 height: videoData.metadata.height,
+                ttl: 300000
             }, threadId, type);
 
             try {
@@ -162,20 +163,24 @@ module.exports.handleEvent = async function ({ api, event }) {
     if (imagesToSend.length > 0) {
         try {
             let attachments = [];
-            imagesToSend.forEach(async (image, index) => {
+
+            for (const image of imagesToSend) {
                 const imagePath = await downloadMedia(image.url, 'image');
                 attachments.push(imagePath);
-            });
-
-            const VoicePath = await downloadMedia(audioToSend.url, 'audio');
-            const voiceUrl = await processAudio(VoicePath, threadId, type);
+            }
 
             await api.sendMessage({
                 msg: `${messageBody}`,
-                attachments
+                attachments,
+                ttl: 300000
             }, threadId, type);
 
-            await api.sendVoice({ voiceUrl }, threadId, type);
+            if (audioToSend) {
+                const VoicePath = await downloadMedia(audioToSend.url, 'audio');
+                const voiceUrl = await processAudio(VoicePath, threadId, type);
+                await api.sendVoice({ voiceUrl, ttl: 300000 }, threadId, type);
+                audioToSend = null;
+            }
 
             attachments.forEach(filePath => fs.unlinkSync(filePath));
             try {
@@ -205,6 +210,7 @@ module.exports.handleEvent = async function ({ api, event }) {
                         type
                 });
             } catch {}
+            return;
         }
     }
 
@@ -215,9 +221,10 @@ module.exports.handleEvent = async function ({ api, event }) {
             const thumbnailPath = await downloadMedia(apiData.thumbnail, 'image');
             await api.sendMessage({
                 msg: `${messageBody}\n\n🎵 Audio: `,
-                attachments: thumbnailPath
+                attachments: thumbnailPath,
+                ttl: 300000
             }, threadId, type);
-            await api.sendVoice({ voiceUrl }, threadId, type);
+            await api.sendVoice({ voiceUrl, ttl: 300000 }, threadId, type);
             fs.unlinkSync(thumbnailPath);
             try {
                 await api.addReaction(Reactions.NONE, {
@@ -255,7 +262,6 @@ module.exports.handleEvent = async function ({ api, event }) {
 module.exports.run = async function ({ api, event, args }) {
     const { threadId, type } = event;
 
-    if (args[0] === 'help') {
         return api.sendMessage({
             msg: '🔍 AUTODOWN HELPER\n\n' +
                 'Tự động tải xuống media từ các link được chia sẻ trong nhóm.\n\n' +
@@ -266,13 +272,9 @@ module.exports.run = async function ({ api, event, args }) {
                 '👍 - Đang xử lý\n' +
                 '❤️ - Tải thành công\n' +
                 '😢 - Lỗi khi tải\n' +
-                '😮 - Không tìm thấy media\n'
+                '😮 - Không tìm thấy media\n',
+            ttl: 5000
         }, threadId, type);
-    } else {
-        return api.sendMessage({
-            msg: '🎦 AUTODOWN\n\nModule tự động tải xuống media từ các link được chia sẻ.\nDùng "autodown help" để xem hướng dẫn chi tiết.'
-        }, threadId, type);
-    }
 };
 async function downloadMedia(url, mediaType) {
     try {

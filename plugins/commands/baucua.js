@@ -5,7 +5,7 @@ const Jimp = require("jimp");
 
 module.exports.config = {
   name: "baucua",
-  version: "1.0.3",
+  version: "1.0.5",
   role: 0,
   author: "ShinTHL09",
   description: "Game bầu cua đa cược",
@@ -57,12 +57,14 @@ async function ensureCache() {
   }
 }
 
+module.exports.onLoad = async () => {
+  await ensureCache();
+}
+
 module.exports.run = async function ({ args, event, api, Users }) {
   const { threadId, type, data } = event;
   const uid = data.uidFrom;
   const send = msg => api.sendMessage({ msg }, threadId, type);
-
-  await ensureCache();
 
   const userData = (await Users.getData(uid)).data;
   let money = userData.money;
@@ -129,6 +131,6 @@ module.exports.run = async function ({ args, event, api, Users }) {
     msg += `\n🏆 Tổng thắng: ${totalWin.toLocaleString()}đ`;
     msg += `\n📦 Số dư mới: ${finalMoney.toLocaleString()}đ`;
 
-    api.sendMessage({ msg, attachments: resultPath }, threadId, type);
+    api.sendMessage({ msg, attachments: resultPath, ttl: 15000 }, threadId, type);
   }, 5000);
 };

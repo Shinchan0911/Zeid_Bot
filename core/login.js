@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { Zalo } = require("zca-js");
 const logger = require("../utils/logger");
-const { saveBase64Image, getJsonData } = require("../utils/index");
+const { getJsonData, displayQRCodeInConsole } = require("../utils/index");
 
 async function loginWithQR() {
     try {
@@ -14,13 +14,14 @@ async function loginWithQR() {
         const cookieFileName = accountData.cookie || "cookie.json";
         const cookiePath = path.join(__dirname, `../${cookieFileName}`);
 
-        const api = await zalo.loginQR({}, (qrData) => {
+        const api = await zalo.loginQR({}, async (qrData) => {
             const { image, cookie, imei, userAgent, code } = qrData.data;
 
             if (image && !cookie) {
+                logger.log("Vui lòng quét mã QRCode bên dưới để đăng nhập:", "info");
+                
                 const qrPath = path.join(__dirname, `../${global.config.qrcode_path}`);
-                saveBase64Image(image, qrPath);
-                logger.log(`Vui lòng quét mã QRCode ${path.basename(qrPath)} để đăng nhập`, "info");
+                await displayQRCodeInConsole(image, qrPath);
                 return;
             }
             if (userAgent && cookie && imei) {
@@ -35,7 +36,7 @@ async function loginWithQR() {
                         cookie: cookieFileName
                     };
                     fs.writeFileSync(accountPath, JSON.stringify(newAccountData, null, 2), "utf8");
-
+                    console.clear();
                     logger.log(`Đã lưu cookie vào ${cookieFileName} và cập nhật ${path.basename(accountPath)}`, "info");
                 } catch (err) {
                     logger.log(`Lỗi khi ghi file: ${err.message || err}`, "error");

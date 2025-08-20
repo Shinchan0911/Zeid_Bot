@@ -5,7 +5,7 @@ const Jimp = require("jimp");
 
 module.exports.config = {
   name: "taixiu",
-  version: "1.0.3",
+  version: "1.0.5",
   role: 0,
   author: "ShinTHL09",
   description: "Game tài xỉu có cược tiền hoặc allin",
@@ -45,12 +45,14 @@ async function ensureDiceImagesExist() {
   }
 }
 
+module.exports.onLoad = async () => {
+  await ensureDiceImagesExist();
+}
+
 module.exports.run = async ({ args, event, api, Users }) => {
   const { threadId, type, data } = event;
   const uid = data.uidFrom;
   const send = (msg) => api.sendMessage({ msg }, threadId, type);
-
-  await ensureDiceImagesExist();
 
   const choice = args[0]?.toLowerCase();
   if (!["tai", "xiu"].includes(choice))
@@ -123,6 +125,6 @@ module.exports.run = async ({ args, event, api, Users }) => {
       message += `💥 Bạn thua! -${betAmount.toLocaleString()}₫\n💰 Số dư: ${userData.money.toLocaleString()}₫`;
     }
 
-    api.sendMessage({ msg: message, attachments: finalImagePath }, threadId, type);
+    api.sendMessage({ msg: message, attachments: finalImagePath, ttl: 15000 }, threadId, type);
   }, 5000);
 };

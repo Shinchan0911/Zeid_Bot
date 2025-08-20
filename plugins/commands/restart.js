@@ -1,5 +1,6 @@
 module.exports.config = {
   name: 'restart',
+  asliases: ['rs'],
   version: '1.0.0',
   role: 2,
   author: 'ShinTHL09',

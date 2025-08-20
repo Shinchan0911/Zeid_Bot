@@ -3,7 +3,6 @@ const handleEvent = require("./handle/handleEvent");
 const logger = require("../utils/logger");
 const { updateMessageCache } = require("../utils/index");
 
-const Users = require("./controller/controllerUsers");
 const Threads = require("./controller/controllerThreads");
 
 function startListening(api) {

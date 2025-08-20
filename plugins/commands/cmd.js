@@ -1,10 +1,11 @@
 const path = require("path");
 const fs = require("fs");
-const { execSync } = require("child_process");
+const loaderCommand = require("../../core/loader/loaderCommand");
 
 module.exports.config = {
-    name: "cmd",
-    version: "1.0.0",
+    name: "command",
+    aliases: ["cmd"],
+    version: "1.2.0",
     role: 2,
     author: "NLam182",
     description: "Quản lý và kiểm soát các plugin lệnh của bot.",
@@ -16,60 +17,24 @@ module.exports.config = {
 async function loadModule(api, event, moduleName) {
     const { threadId, type } = event;
     const commandPath = path.join(__dirname, `${moduleName}.js`);
-    try {
-        if (!fs.existsSync(commandPath)) {
-            return api.sendMessage(`Không tìm thấy plugin '${moduleName}'.`, threadId, type);
-        }
-
-        delete require.cache[require.resolve(commandPath)];
-        const command = require(commandPath);
-
-        if (!command.config || !command.config.name || typeof command.run !== "function") {
-            return api.sendMessage(`Lệnh '${moduleName}' không hợp lệ hoặc thiếu thông tin.`, threadId, type);
-        }
-
-        const dependencies = command.config.dependencies || {};
-        let installedNewDep = false;
-
-        for (const [pkgName, version] of Object.entries(dependencies)) {
-            try {
-                require.resolve(pkgName);
-            } catch {
-                api.sendMessage(`🔄 Đang cài package: ${pkgName}@${version || "latest"}`, threadId, type);
-                try {
-                    execSync(`npm install ${pkgName}@${version || "latest"}`, {
-                        stdio: "inherit",
-                        cwd: path.join(__dirname, "../../")
-                    });
-                    installedNewDep = true;
-                } catch (err) {
-                    return api.sendMessage(`❌ Lỗi khi cài ${pkgName}: ${err.message}`, threadId, type);
-                }
-            }
-        }
-
-        const name = command.config.name.toLowerCase();
-        global.client.commands.set(name, command);
-
-        if (typeof command.onLoad === "function") {
-            try {
-                command.onLoad({ api });
-            } catch (e) {
-                api.sendMessage(`⚠️ Lỗi trong onLoad của ${name}: ${e.message}`, threadId, type);
-            }
-        }
-
-        if (installedNewDep) {
-            api.sendMessage("🔁 Đã cài thêm package. Bot sẽ khởi động lại để áp dụng...", threadId, type);
-            process.exit(2);
-        } else {
-            api.sendMessage(`✅ Đã tải lệnh '${moduleName}' thành công.`, threadId, type);
-        }
-
-    } catch (error) {
-        console.error(`Lỗi khi tải lệnh ${moduleName}:`, error);
-        return api.sendMessage(`❌ Lỗi khi tải lệnh '${moduleName}':\n${error.message}`, threadId, type);
+    if (!fs.existsSync(commandPath)) {
+        return api.sendMessage(`Không tìm thấy plugin '${moduleName}'.`, threadId, type);
     }
+
+    delete require.cache[require.resolve(commandPath)];
+    const load = await loaderCommand(moduleName);
+
+    if (load.status === false) {
+        return api.sendMessage(`❌ Lỗi khi tải lệnh '${moduleName}': ${load.error}`, threadId, type);
+    }
+
+    if (load.restart) {
+        await api.sendMessage(`🔄 Đã cài đặt thêm package. Tiến hành khởi động lại bot để áp dụng thay đổi.`, threadId, type);
+        return process.exit(2);
+    }
+
+    return api.sendMessage(`✅ Đã tải lệnh '${moduleName}' thành công.`, threadId, type);
+
 }
 
 async function unloadModule(api, event, moduleName) {
