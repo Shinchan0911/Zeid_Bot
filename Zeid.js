@@ -48,12 +48,10 @@ const tempFolderEvent = path.join(__dirname, "plugins", "events", "temp");
 try {
   if (fs.existsSync(tempFolderCommand)) {
     fs.rmSync(tempFolderCommand, { recursive: true, force: true });
-    fs.mkdirSync(tempFolderCommand, { recursive: true });
     logger.log("Đã dọn dẹp folder temp của commands", "info");
   } 
   if (fs.existsSync(tempFolderEvent)) {
     fs.rmSync(tempFolderEvent, { recursive: true, force: true });
-    fs.mkdirSync(tempFolderEvent, { recursive: true });
     logger.log("Đã dọn dẹp folder temp của events", "info");
   }
 } catch (error) {

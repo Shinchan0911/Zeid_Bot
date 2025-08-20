@@ -123,6 +123,8 @@ module.exports.run = async function ({ api, event }) {
     }
     // Xử lý ảnh
     else if (typeof data.content.title === "string" && data.content.title.trim().toLowerCase().startsWith(command)) {
+        const tempPath = path.join(__dirname, 'temp');
+        await fs.mkdir(tempPath, { recursive: true });
         const imagePath = path.join(__dirname, 'temp', `image_${threadId}.jpg`);
         let content_haveimg = data.content?.title?.slice(5) + "trả lời cho tôi ngắn gọn nhất và luôn đảm bảo câu trả lời dưới 340 chữ" || "";
         content_haveimg = content_haveimg.slice(0, 340);
