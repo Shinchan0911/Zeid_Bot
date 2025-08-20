@@ -42,6 +42,24 @@ try {
     process.exit(1);
 }
 
+const tempFolderCommand = path.join(__dirname, "plugins", "commands", "temp");
+const tempFolderEvent = path.join(__dirname, "plugins", "events", "temp");
+
+try {
+  if (fs.existsSync(tempFolderCommand)) {
+    fs.rmSync(tempFolderCommand, { recursive: true, force: true });
+    fs.mkdirSync(tempFolderCommand, { recursive: true });
+    logger.log("Đã dọn dẹp folder temp của commands", "info");
+  } 
+  if (fs.existsSync(tempFolderEvent)) {
+    fs.rmSync(tempFolderEvent, { recursive: true, force: true });
+    fs.mkdirSync(tempFolderEvent, { recursive: true });
+    logger.log("Đã dọn dẹp folder temp của events", "info");
+  }
+} catch (error) {
+  logger.log(`Lỗi khi dọn folder temp: ${error.message || error}`, "error");
+}
+
 logger.log("\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓");
 for (let i = 0; i <= global.users.admin.length - 1; i++) {
     dem = i + 1;
